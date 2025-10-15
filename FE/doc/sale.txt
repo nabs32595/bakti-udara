@@ -1,0 +1,196 @@
+1.0	PURPOSE
+To establish and maintain procedure to ensure orders from the interested parties are properly arranged and meets requirement.
+
+
+2.0	SCOPE
+This procedure covers new sales enquiries and orders received from the interested parties
+
+
+3.0	REFERENCE
+Quality Manual		QM-01
+
+
+4.0	DEFINITION
+GM	General Manager
+ADM	Admin
+OPT	Operation
+PO	Purchase Order
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5.0	PROCEDURE OUTLINE
+5.1	Enquiry (RFQ) – Spares
+
+Responsibility					Activity			Interface
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5.2	Order Processing
+
+Responsibility					Activity			Interface
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Responsibility					Activity			Interface
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.0	PROCEDURE DETAILS
+
+6.1	Enquiry (RFQ) - Spares
+6.1.1	Operation shall monitor and receive RFQ from interested parties (OEM Customer) thru email or system.
+6.1.2	Operation shall review RFQ to clear information in the RFQ
+6.1.3	If found any discrepancies in RFQ,  Operation shall inform to the relevant to interested parties for the amendment.
+6.1.4	If no discrepancies found, Operation shall email the RFQ to OEM.
+6.1.5	Operation shall review the OEM quotation to ensure information are tally with the RFQ.
+6.1.6	If found any discrepancies in RFQ,  Operation shall inform to the relevant to OEM for the amendment 
+6.1.7	If no discrepancies found, Operation shall email or upload the quotation into the interested parties system.
+
+6.2	Order Processing
+6.2.1	Operation shall receive notification on PO readiness from the relevant interested parties via email.
+6.2.2	Operation shall collect and review the PO.
+6.2.3	If any discrepancies on PO, Operation shall inform the interested party for amendment
+6.2.4	If no discrepancies on PO, Operation shall email the PO to OEM
+6.2.5	Operation shall receive order confirmation from OEM. 
+6.2.6	Then, Operation shall forward the order confirmation to the relevant interested parties
+6.2.7	Operation shall monitor the spares delivery based on the delivery terms stated on the order confirmation .
+6.2.8	Operation shall notify interested party on the readiness of consignment for pick up via email
+6.2.9	Operation then shall receive notification of delivery from OEM via email
+6.2.10	Operation shall proceed for invoicing.

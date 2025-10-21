@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-4">
     <div>
       <h2 class="text-2xl font-bold tracking-tight">Sales Operations Dashboard</h2>
       <p class="text-muted-foreground">
@@ -8,142 +8,149 @@
     </div>
     
     <!-- Key Metrics -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
       <Card class="border-2 border-gray-300">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium text-gray-700">Active RFQs</CardTitle>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle class="text-sm font-medium text-gray-700">Total RFQs</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-gray-900">{{ activeRFQs }}</div>
+        <CardContent class="pt-1">
+          <div class="text-xl font-bold text-gray-900">{{ totalRFQs }}</div>
           <p class="text-xs text-gray-500">
-            {{ newRFQsThisWeek }} new this week
+            All quotation requests
           </p>
         </CardContent>
       </Card>
       
       <Card class="border-2 border-gray-300">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium text-gray-700">Pending Orders</CardTitle>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle class="text-sm font-medium text-gray-700">Under Review</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-gray-900">{{ pendingOrders }}</div>
+        <CardContent class="pt-1">
+          <div class="text-xl font-bold text-gray-900">{{ underReview }}</div>
           <p class="text-xs text-gray-500">
-            {{ ordersInProgress }} in progress
+            Awaiting initial review
           </p>
         </CardContent>
       </Card>
       
       <Card class="border-2 border-gray-300">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium text-gray-700">Awaiting Delivery</CardTitle>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle class="text-sm font-medium text-gray-700">Sent to OEM</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-gray-900">{{ awaitingDelivery }}</div>
+        <CardContent class="pt-1">
+          <div class="text-xl font-bold text-gray-900">{{ sentToOEM }}</div>
           <p class="text-xs text-gray-500">
-            {{ readyForPickup }} ready for pickup
+            Forwarded to suppliers
           </p>
         </CardContent>
       </Card>
       
       <Card class="border-2 border-gray-300">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium text-gray-700">Monthly Revenue</CardTitle>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle class="text-sm font-medium text-gray-700">Quoted</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-gray-900">${{ monthlyRevenue.toLocaleString() }}</div>
+        <CardContent class="pt-1">
+          <div class="text-xl font-bold text-gray-900">{{ quoted }}</div>
           <p class="text-xs text-gray-500">
-            +{{ revenueGrowth }}% from last month
+            Pricing received
           </p>
         </CardContent>
       </Card>
     </div>
     
-    <!-- Main Content Grid -->
-    <div class="grid gap-4 md:grid-cols-2">
-      <!-- RFQ Management Section -->
+    <!-- AES Distribution -->
+    <div class="grid gap-3 md:grid-cols-2">
       <Card class="border-2 border-gray-300">
         <CardHeader>
-          <CardTitle class="text-gray-700">Recent RFQs</CardTitle>
-          <CardDescription class="text-gray-500">Latest quotation requests from customers</CardDescription>
+          <CardTitle class="text-gray-700">AES Distribution</CardTitle>
+          <CardDescription class="text-gray-500">Breakdown by AES classification</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div class="space-y-4">
-            <div v-for="rfq in recentRFQs" :key="rfq.id" class="flex items-center space-x-4">
+        <CardContent class="pt-2">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-800">A</span>
+                <span class="text-sm font-medium text-gray-700">AES A</span>
+              </div>
+              <span class="text-lg font-bold text-gray-900">{{ aesA }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs rounded-full bg-gray-300 text-gray-800">E</span>
+                <span class="text-sm font-medium text-gray-700">AES E</span>
+              </div>
+              <span class="text-lg font-bold text-gray-900">{{ aesE }}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card class="border-2 border-gray-300">
+        <CardHeader>
+          <CardTitle class="text-gray-700">Status Overview</CardTitle>
+          <CardDescription class="text-gray-500">Current RFQ status distribution</CardDescription>
+        </CardHeader>
+        <CardContent class="pt-2">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                <span class="text-sm font-medium text-gray-700">Under Review</span>
+              </div>
+              <span class="text-lg font-bold text-gray-900">{{ underReview }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                <span class="text-sm font-medium text-gray-700">Sent to OEM</span>
+              </div>
+              <span class="text-lg font-bold text-gray-900">{{ sentToOEM }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span class="text-sm font-medium text-gray-700">Quoted</span>
+              </div>
+              <span class="text-lg font-bold text-gray-900">{{ quoted }}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+    
+    <!-- RFQ Focus Section -->
+    <div class="grid gap-3 md:grid-cols-1">
+      <!-- Recent RFQs - Expanded -->
+      <Card class="border-2 border-gray-300">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle class="text-gray-700">Recent RFQs</CardTitle>
+              <CardDescription class="text-gray-500">Latest quotation requests from customers</CardDescription>
+            </div>
+            <Button class="bg-gray-200 text-gray-700 border-gray-300" @click="$router.push('/request-for-quotation')">
+              View All RFQs
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent class="pt-2">
+          <div class="space-y-2">
+            <div v-for="rfq in recentRFQs" :key="rfq.id" class="flex items-center space-x-3 p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
               <div :class="getStatusColor(rfq.status)" class="w-2 h-2 rounded-full"></div>
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-700">{{ rfq.customer }} - {{ rfq.items }}</p>
+              <div class="flex-1 space-y-0.5">
+                <p class="text-sm font-medium text-gray-800">{{ rfq.desc }}</p>
+                <p class="text-xs text-gray-600">{{ rfq.rfqNo }} • P/N: {{ rfq.pno }} • Qty: {{ rfq.quantity }}</p>
                 <p class="text-xs text-gray-500">{{ rfq.status }} • {{ rfq.date }}</p>
               </div>
-              <span :class="getStatusBadgeClass(rfq.status)" class="px-2 py-1 text-xs rounded-full">
-                {{ rfq.status }}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <!-- Order Processing Section -->
-      <Card class="border-2 border-gray-300">
-        <CardHeader>
-          <CardTitle class="text-gray-700">Active Orders</CardTitle>
-          <CardDescription class="text-gray-500">Purchase orders in processing pipeline</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-4">
-            <div v-for="order in activeOrders" :key="order.id" class="flex items-center space-x-4">
-              <div :class="getStatusColor(order.status)" class="w-2 h-2 rounded-full"></div>
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-700">PO #{{ order.poNumber }} - {{ order.customer }}</p>
-                <p class="text-xs text-gray-500">{{ order.status }} • {{ order.date }}</p>
-              </div>
-              <span :class="getStatusBadgeClass(order.status)" class="px-2 py-1 text-xs rounded-full">
-                {{ order.status }}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-    
-    <!-- Activity Timeline and Quick Actions -->
-    <div class="grid gap-4 md:grid-cols-2">
-      <Card class="border-2 border-gray-300">
-        <CardHeader>
-          <CardTitle class="text-gray-700">Recent Activity</CardTitle>
-          <CardDescription class="text-gray-500">Latest sales operations activities</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-4">
-            <div v-for="activity in recentActivities" :key="activity.id" class="flex items-center space-x-4">
-              <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-700">{{ activity.description }}</p>
-                <p class="text-xs text-gray-500">{{ activity.timestamp }}</p>
+              <div class="flex flex-col space-y-1">
+                <span :class="getStatusBadgeClass(rfq.status)" class="px-2 py-1 text-xs rounded-full">
+                  {{ rfq.status }}
+                </span>
+                <span :class="getAesBadgeClass(rfq.aes)" class="px-2 py-1 text-xs rounded-full">
+                  {{ rfq.aes }}
+                </span>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card class="border-2 border-gray-300">
-        <CardHeader>
-          <CardTitle class="text-gray-700">Quick Actions</CardTitle>
-          <CardDescription class="text-gray-500">Common sales operations tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="grid gap-2">
-            <Button class="justify-start bg-gray-200 text-gray-700 border-gray-300" @click="$router.push('/rfq')">
-              Create New RFQ
-            </Button>
-            <Button variant="outline" class="justify-start border-gray-300 text-gray-700" @click="$router.push('/orders')">
-              Process Purchase Order
-            </Button>
-            <Button variant="outline" class="justify-start border-gray-300 text-gray-700">
-              View Pending Deliveries
-            </Button>
-            <Button variant="outline" class="justify-start border-gray-300 text-gray-700">
-              Generate Invoice
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -156,99 +163,78 @@ import { ref } from 'vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
-// Mock data for metrics
-const activeRFQs = ref(12)
-const newRFQsThisWeek = ref(3)
-const pendingOrders = ref(8)
-const ordersInProgress = ref(5)
-const awaitingDelivery = ref(6)
-const readyForPickup = ref(2)
-const monthlyRevenue = ref(125430)
-const revenueGrowth = ref(12.5)
+// Mock data for metrics based on RFQ page data
+const totalRFQs = ref(13)
+const underReview = ref(5)
+const sentToOEM = ref(4)
+const quoted = ref(4)
+const aesA = ref(5)
+const aesE = ref(8)
 
-// Mock data for recent RFQs
+// Mock data for recent RFQs based on RFQ page data
 const recentRFQs = ref([
   {
     id: 1,
-    customer: 'Garuda Indonesia',
-    items: 'Engine Parts (3 items)',
+    rfqNo: 'RFQM50-08012025-0001-RO1',
+    desc: 'PANEL ASSY, FLOOR, LH',
+    pno: '5251409289',
+    aes: 'A',
+    quantity: 1,
     status: 'Under Review',
-    date: '2 hours ago'
+    date: '08/01/2025 2:30PM'
   },
   {
     id: 2,
-    customer: 'Lion Air',
-    items: 'Landing Gear Components',
+    rfqNo: 'RFQM50-08012025-0002-RO1',
+    desc: 'RELAY, SOCKET',
+    pno: '9742200100',
+    aes: 'E',
+    quantity: 3,
     status: 'Sent to OEM',
-    date: '4 hours ago'
+    date: '08/01/2025 10:15AM'
   },
   {
     id: 3,
-    customer: 'Batik Air',
-    items: 'Avionics Equipment',
+    rfqNo: 'RFQM50-08012025-0003-RO1',
+    desc: 'ROD ASSY, PUSH/PULL, FRONT',
+    pno: '576.10.09.021',
+    aes: 'E',
+    quantity: 1,
     status: 'Quoted',
-    date: '1 day ago'
-  }
-])
-
-// Mock data for active orders
-const activeOrders = ref([
-  {
-    id: 1,
-    poNumber: 'PO-2024-001',
-    customer: 'Garuda Indonesia',
-    status: 'Order Confirmed',
-    date: '3 hours ago'
-  },
-  {
-    id: 2,
-    poNumber: 'PO-2024-002',
-    customer: 'Lion Air',
-    status: 'In Delivery',
-    date: '1 day ago'
-  },
-  {
-    id: 3,
-    poNumber: 'PO-2024-003',
-    customer: 'Batik Air',
-    status: 'Ready for Pickup',
-    date: '2 days ago'
-  }
-])
-
-// Mock data for recent activities
-const recentActivities = ref([
-  {
-    id: 1,
-    description: 'RFQ received from Garuda Indonesia for engine parts',
-    timestamp: '2 hours ago'
-  },
-  {
-    id: 2,
-    description: 'Order confirmation sent to Lion Air for PO-2024-002',
-    timestamp: '4 hours ago'
-  },
-  {
-    id: 3,
-    description: 'Delivery notification received from OEM for Batik Air order',
-    timestamp: '6 hours ago'
+    date: '07/01/2025 3:45PM'
   },
   {
     id: 4,
-    description: 'Invoice generated for Citilink PO-2024-004',
-    timestamp: '1 day ago'
+    rfqNo: 'RFQM50-08012025-0004-RO1',
+    desc: 'MUDGUARD ASSY',
+    pno: '5322009158',
+    aes: 'E',
+    quantity: 1,
+    status: 'Under Review',
+    date: '06/01/2025 11:20AM'
+  },
+  {
+    id: 5,
+    rfqNo: 'RFQM50-08012025-0005-RO1',
+    desc: 'NUT',
+    pno: '114.40.07.097',
+    aes: 'E',
+    quantity: 1,
+    status: 'Sent to OEM',
+    date: '05/01/2025 4:10PM'
   }
 ])
 
-// Helper methods for status styling
+
+// Helper methods for status styling - Greyscale only
 const getStatusColor = (status: string) => {
   const colors = {
-    'Under Review': 'bg-yellow-400',
-    'Sent to OEM': 'bg-blue-400',
-    'Quoted': 'bg-green-400',
-    'Order Confirmed': 'bg-blue-400',
-    'In Delivery': 'bg-yellow-400',
-    'Ready for Pickup': 'bg-green-400',
+    'Under Review': 'bg-gray-300',
+    'Sent to OEM': 'bg-gray-400',
+    'Quoted': 'bg-gray-500',
+    'Order Confirmed': 'bg-gray-400',
+    'In Delivery': 'bg-gray-300',
+    'Ready for Pickup': 'bg-gray-500',
     'Invoiced': 'bg-gray-400'
   }
   return colors[status as keyof typeof colors] || 'bg-gray-400'
@@ -256,14 +242,22 @@ const getStatusColor = (status: string) => {
 
 const getStatusBadgeClass = (status: string) => {
   const classes = {
-    'Under Review': 'bg-yellow-100 text-yellow-800',
-    'Sent to OEM': 'bg-blue-100 text-blue-800',
-    'Quoted': 'bg-green-100 text-green-800',
-    'Order Confirmed': 'bg-blue-100 text-blue-800',
-    'In Delivery': 'bg-yellow-100 text-yellow-800',
-    'Ready for Pickup': 'bg-green-100 text-green-800',
+    'Under Review': 'bg-gray-200 text-gray-800',
+    'Sent to OEM': 'bg-gray-300 text-gray-800',
+    'Quoted': 'bg-gray-400 text-gray-900',
+    'Order Confirmed': 'bg-gray-300 text-gray-800',
+    'In Delivery': 'bg-gray-200 text-gray-800',
+    'Ready for Pickup': 'bg-gray-400 text-gray-900',
     'Invoiced': 'bg-gray-100 text-gray-800'
   }
   return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+}
+
+const getAesBadgeClass = (aes: string) => {
+  const classes = {
+    'A': 'bg-gray-200 text-gray-800',
+    'E': 'bg-gray-300 text-gray-800'
+  }
+  return classes[aes as keyof typeof classes] || 'bg-gray-100 text-gray-800'
 }
 </script>

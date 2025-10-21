@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/pages/LoginPage.vue')
+    component: () => import('@/pages/login/LoginPage.vue')
   },
   {
     path: '/',
@@ -16,6 +16,16 @@ const routes: RouteRecordRaw[] = [
     path: '/request-for-quotation',
     name: 'Request For Quotation',
     component: () => import('@/pages/RequestForQuotation.vue')
+  },
+  {
+    path: '/request-for-quotation/create',
+    name: 'Create RFQ',
+    component: () => import('@/pages/CreateRFQPage.vue')
+  },
+  {
+    path: '/request-for-quotation/:rfqNo',
+    name: 'RFQ Details',
+    component: () => import('@/pages/RFQDetailsPage.vue')
   },
   {
     path: '/quotations',

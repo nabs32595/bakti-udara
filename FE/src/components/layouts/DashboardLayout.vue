@@ -93,6 +93,9 @@
             <Button @click="handleLogout" class="w-full">
               Logout
             </Button>
+            <div class="mt-3 text-center text-xs text-muted-foreground">
+              Version Alpha 0.1.0
+            </div>
           </div>
         </SidebarContent>
       </Sidebar>

@@ -102,10 +102,13 @@
 
       <!-- Main Content -->
       <SidebarInset>
-        <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger class="-ml-1"/>
-          <Separator orientation="vertical" class="mr-2 h-4"/>
-          <h1 class="text-lg font-semibold">{{ $route.name }}</h1>
+        <header class="flex h-16 shrink-0 items-center justify-between border-b px-4">
+          <div class="flex items-center gap-2">
+            <SidebarTrigger class="-ml-1"/>
+            <Separator orientation="vertical" class="mr-2 h-4"/>
+            <h1 class="text-lg font-semibold">{{ $route.name }}</h1>
+          </div>
+          <NotificationBell />
         </header>
 
         <main class="flex-1 p-6">
@@ -133,6 +136,7 @@ import {
 } from '@/components/ui/sidebar'
 import {Separator} from '@/components/ui/separator'
 import {Button} from '@/components/ui/button'
+import NotificationBell from '@/components/NotificationBell.vue'
 
 const router = useRouter()
 

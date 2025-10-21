@@ -24,17 +24,20 @@
           <Badge :class="getStatusBadgeClass(rfqData?.status || '')">
             {{ rfqData?.status }}
           </Badge>
+          <Badge v-if="isEditMode" class="bg-gray-200 text-gray-800 border-gray-300">
+            Edit Mode
+          </Badge>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8" :class="{ 'bg-gray-50': isEditMode }">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Details -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Basic Information -->
-          <Card>
+          <Card :class="{ 'border-gray-400': isEditMode }">
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>
               <CardDescription>Core details of the RFQ item</CardDescription>
@@ -43,32 +46,86 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label class="text-sm font-medium text-gray-500">Item Number</Label>
-                  <p class="text-lg font-semibold text-gray-900">{{ rfqData?.no }}</p>
+                  <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.no }}</p>
+                  <Input
+                    v-else
+                    v-model="editFormData.no"
+                    type="text"
+                    :class="{ 'border-gray-600': editErrors.no }"
+                    @input="clearEditError('no')"
+                  />
+                  <p v-if="editErrors.no" class="text-xs text-gray-600 mt-1">{{ editErrors.no }}</p>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-gray-500">Reference No</Label>
-                  <p class="text-lg font-semibold text-gray-900">{{ rfqData?.referenceNo }}</p>
+                  <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.referenceNo }}</p>
+                  <Input
+                    v-else
+                    v-model="editFormData.referenceNo"
+                    type="text"
+                    :class="{ 'border-gray-600': editErrors.referenceNo }"
+                    @input="clearEditError('referenceNo')"
+                  />
+                  <p v-if="editErrors.referenceNo" class="text-xs text-gray-600 mt-1">{{ editErrors.referenceNo }}</p>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-gray-500">Part Number</Label>
-                  <p class="text-lg font-semibold text-gray-900">{{ rfqData?.pno }}</p>
+                  <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.pno }}</p>
+                  <Input
+                    v-else
+                    v-model="editFormData.pno"
+                    type="text"
+                    :class="{ 'border-gray-600': editErrors.pno }"
+                    @input="clearEditError('pno')"
+                  />
+                  <p v-if="editErrors.pno" class="text-xs text-gray-600 mt-1">{{ editErrors.pno }}</p>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-gray-500">Quantity</Label>
-                  <p class="text-lg font-semibold text-gray-900">{{ rfqData?.quantity }} EA</p>
+                  <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.quantity }} EA</p>
+                  <Input
+                    v-else
+                    v-model.number="editFormData.quantity"
+                    type="number"
+                    min="1"
+                    :class="{ 'border-gray-600': editErrors.quantity }"
+                    @input="clearEditError('quantity')"
+                  />
+                  <p v-if="editErrors.quantity" class="text-xs text-gray-600 mt-1">{{ editErrors.quantity }}</p>
                 </div>
               </div>
               <div>
                 <Label class="text-sm font-medium text-gray-500">Description</Label>
-                <p class="text-lg text-gray-900 mt-1">{{ rfqData?.desc }}</p>
+                <p v-if="!isEditMode" class="text-lg text-gray-900 mt-1">{{ rfqData?.desc }}</p>
+                <textarea
+                  v-else
+                  v-model="editFormData.desc"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                  :class="{ 'border-gray-600': editErrors.desc }"
+                  @input="clearEditError('desc')"
+                ></textarea>
+                <p v-if="editErrors.desc" class="text-xs text-gray-600 mt-1">{{ editErrors.desc }}</p>
               </div>
               <div class="flex items-center space-x-4">
                 <div>
                   <Label class="text-sm font-medium text-gray-500">AES Classification</Label>
                   <div class="mt-1">
-                    <Badge :class="getAesBadgeClass(rfqData?.aes || '')">
+                    <Badge v-if="!isEditMode" :class="getAesBadgeClass(rfqData?.aes || '')">
                       {{ rfqData?.aes }}
                     </Badge>
+                    <select
+                      v-else
+                      v-model="editFormData.aes"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                      :class="{ 'border-gray-600': editErrors.aes }"
+                      @change="clearEditError('aes')"
+                    >
+                      <option value="">Select AES Classification</option>
+                      <option value="A">A</option>
+                      <option value="E">E</option>
+                    </select>
+                    <p v-if="editErrors.aes" class="text-xs text-gray-600 mt-1">{{ editErrors.aes }}</p>
                   </div>
                 </div>
                 <div>
@@ -80,13 +137,104 @@
           </Card>
 
           <!-- Document Details -->
-          <Card>
+          <Card :class="{ 'border-gray-400': isEditMode }">
             <CardHeader>
               <CardTitle>Document Details</CardTitle>
               <CardDescription>Attached documents and specifications</CardDescription>
             </CardHeader>
             <CardContent>
-              <div class="space-y-3">
+              <!-- Edit Mode: File Upload Area -->
+              <div v-if="isEditMode" class="space-y-4">
+                <!-- File Upload Area -->
+                <div
+                  @drop.prevent="handleFileDrop"
+                  @dragover.prevent
+                  @dragenter.prevent
+                  class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                  :class="{ 'border-gray-500 bg-gray-100': isDragOver }"
+                  @dragenter="isDragOver = true"
+                  @dragleave="isDragOver = false"
+                >
+                  <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p class="text-sm text-gray-600 mb-2">Drop files here or click to upload</p>
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    multiple
+                    @change="handleFileSelect"
+                    class="hidden"
+                    accept=".pdf,.dwg,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    @click="() => fileInput?.click()"
+                    class="mt-2"
+                  >
+                    Choose Files
+                  </Button>
+                  <p class="text-xs text-gray-500 mt-2">Supported formats: PDF, DWG, Excel, Word, Images</p>
+                </div>
+
+                <!-- Existing Documents with Remove Option -->
+                <div v-if="documents.length > 0" class="space-y-2">
+                  <h4 class="text-sm font-medium text-gray-700">Existing Documents:</h4>
+                  <div v-for="(doc, index) in documents" :key="doc.id" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                      <div class="flex-shrink-0">
+                        <div :class="getFileIconClass(doc.type)" class="w-8 h-8 rounded flex items-center justify-center text-white text-sm font-medium">
+                          {{ getFileIcon(doc.type) }}
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ doc.name }}</p>
+                        <p class="text-xs text-gray-500">{{ doc.type }} • {{ doc.size }} • {{ doc.uploadDate }}</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      @click="removeExistingDocument(index)"
+                      class="text-gray-600 border-gray-400 hover:bg-gray-100"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+
+                <!-- Newly Added Documents -->
+                <div v-if="editedDocuments.length > 0" class="space-y-2">
+                  <h4 class="text-sm font-medium text-gray-700">New Documents:</h4>
+                  <div v-for="(file, index) in editedDocuments" :key="index" class="flex items-center justify-between p-3 bg-gray-100 border border-gray-300 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                      <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-gray-600 rounded flex items-center justify-center text-white text-sm font-medium">
+                          {{ getFileIcon(file.type) }}
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ file.name }}</p>
+                        <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      @click="removeNewDocument(index)"
+                      class="text-gray-600 border-gray-400 hover:bg-gray-100"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- View Mode: Document List -->
+              <div v-else class="space-y-3">
                 <div v-for="doc in documents" :key="doc.id" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
                   <div class="flex items-center space-x-3">
                     <div class="flex-shrink-0">
@@ -128,11 +276,29 @@
         <!-- Sidebar -->
         <div class="space-y-6">
           <!-- Status and Timeline -->
-          <Card>
+          <Card :class="{ 'border-gray-400': isEditMode }">
             <CardHeader>
               <CardTitle>Status & Timeline</CardTitle>
             </CardHeader>
             <CardContent>
+              <div class="space-y-4">
+                <!-- Current Status (Editable in Edit Mode) -->
+                <div v-if="isEditMode" class="space-y-2">
+                  <Label class="text-sm font-medium text-gray-700">Current Status</Label>
+                  <select
+                    v-model="editFormData.status"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                    :class="{ 'border-gray-600': editErrors.status }"
+                    @change="clearEditError('status')"
+                  >
+                    <option value="Under Review">Under Review</option>
+                    <option value="Sent to OEM">Sent to OEM</option>
+                    <option value="Quoted">Quoted</option>
+                  </select>
+                  <p v-if="editErrors.status" class="text-xs text-gray-600">{{ editErrors.status }}</p>
+                </div>
+                
+                <!-- Timeline -->
               <div class="space-y-4">
                 <div class="flex items-center space-x-3">
                   <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
@@ -160,6 +326,7 @@
                   <div>
                     <p class="text-sm text-gray-500">Quoted</p>
                     <p class="text-xs text-gray-400">Pending</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -167,11 +334,36 @@
           </Card>
 
           <!-- Actions -->
-          <Card>
+          <Card :class="{ 'border-gray-400': isEditMode }">
             <CardHeader>
               <CardTitle>Actions</CardTitle>
             </CardHeader>
             <CardContent class="space-y-3">
+              <!-- Edit Mode Actions -->
+              <template v-if="isEditMode">
+                <Button 
+                  class="w-full bg-gray-800 hover:bg-gray-900 text-white" 
+                  @click="saveChanges"
+                  :disabled="isSubmitting"
+                >
+                  <svg v-if="isSubmitting" class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <svg v-else class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+                </Button>
+                <Button variant="outline" class="w-full" @click="cancelEdit" :disabled="isSubmitting">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Cancel
+                </Button>
+              </template>
+              
+              <!-- View Mode Actions -->
+              <template v-else>
               <Button class="w-full" @click="editRFQ">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -196,6 +388,7 @@
                 </svg>
                 Delete RFQ
               </Button>
+              </template>
             </CardContent>
           </Card>
         </div>
@@ -211,6 +404,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 // Router
 const route = useRoute()
@@ -252,6 +446,25 @@ const documents = ref([
     url: '#'
   }
 ])
+
+// Edit mode state management
+const isEditMode = ref(false)
+const isSubmitting = ref(false)
+const isDragOver = ref(false)
+const editFormData = ref({
+  no: '',
+  rfqNo: '',
+  referenceNo: '',
+  pno: '',
+  desc: '',
+  quantity: 1,
+  aes: '',
+  status: ''
+})
+const editErrors = ref<Record<string, string>>({})
+const editedDocuments = ref<any[]>([])
+const originalDocuments = ref<any[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
 
 // Mock RFQ data (in real app, this would come from API)
 const mockRFQData = [
@@ -299,8 +512,165 @@ const goBack = () => {
 }
 
 const editRFQ = () => {
-  console.log('Edit RFQ:', rfqData.value?.rfqNo)
-  alert(`Editing ${rfqData.value?.rfqNo}`)
+  // Copy current data to edit form
+  editFormData.value = {
+    no: rfqData.value?.no || '',
+    rfqNo: rfqData.value?.rfqNo || '',
+    referenceNo: rfqData.value?.referenceNo || '',
+    pno: rfqData.value?.pno || '',
+    desc: rfqData.value?.desc || '',
+    quantity: rfqData.value?.quantity || 1,
+    aes: rfqData.value?.aes || '',
+    status: rfqData.value?.status || ''
+  }
+  
+  // Store original documents
+  originalDocuments.value = [...documents.value]
+  editedDocuments.value = []
+  
+  // Clear any previous errors
+  editErrors.value = {}
+  
+  // Enter edit mode
+  isEditMode.value = true
+}
+
+const cancelEdit = () => {
+  if (hasEditChanges()) {
+    if (confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+      exitEditMode()
+    }
+  } else {
+    exitEditMode()
+  }
+}
+
+const exitEditMode = () => {
+  isEditMode.value = false
+  editErrors.value = {}
+  editedDocuments.value = []
+  isDragOver.value = false
+}
+
+const hasEditChanges = () => {
+  return editFormData.value.pno !== rfqData.value?.pno ||
+         editFormData.value.desc !== rfqData.value?.desc ||
+         editFormData.value.quantity !== rfqData.value?.quantity ||
+         editFormData.value.aes !== rfqData.value?.aes ||
+         editFormData.value.status !== rfqData.value?.status ||
+         editFormData.value.referenceNo !== rfqData.value?.referenceNo ||
+         editFormData.value.rfqNo !== rfqData.value?.rfqNo ||
+         editedDocuments.value.length > 0
+}
+
+const validateEditForm = () => {
+  editErrors.value = {}
+  
+  if (!editFormData.value.pno.trim()) {
+    editErrors.value.pno = 'Part number is required'
+  }
+  
+  if (!editFormData.value.desc.trim()) {
+    editErrors.value.desc = 'Description is required'
+  }
+  
+  if (!editFormData.value.quantity || editFormData.value.quantity < 1) {
+    editErrors.value.quantity = 'Quantity must be at least 1'
+  }
+  
+  if (!editFormData.value.aes) {
+    editErrors.value.aes = 'AES classification is required'
+  }
+  
+  if (!editFormData.value.referenceNo.trim()) {
+    editErrors.value.referenceNo = 'Reference number is required'
+  }
+  
+  if (!editFormData.value.rfqNo.trim()) {
+    editErrors.value.rfqNo = 'RFQ number is required'
+  }
+  
+  if (!editFormData.value.status) {
+    editErrors.value.status = 'Status is required'
+  }
+  
+  return Object.keys(editErrors.value).length === 0
+}
+
+const clearEditError = (field: string) => {
+  if (editErrors.value[field]) {
+    delete editErrors.value[field]
+  }
+}
+
+const saveChanges = async () => {
+  if (!validateEditForm()) {
+    return
+  }
+  
+  isSubmitting.value = true
+  
+  try {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    // Update RFQ data with new values
+    rfqData.value = {
+      ...rfqData.value,
+      no: editFormData.value.no,
+      rfqNo: editFormData.value.rfqNo,
+      referenceNo: editFormData.value.referenceNo,
+      pno: editFormData.value.pno,
+      desc: editFormData.value.desc,
+      quantity: editFormData.value.quantity,
+      aes: editFormData.value.aes,
+      status: editFormData.value.status,
+      date: new Date().toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    }
+    
+    // Update documents (in real app, this would be handled by API)
+    if (editedDocuments.value.length > 0) {
+      // Add new documents to the list
+      const newDocs = editedDocuments.value.map((file, index) => ({
+        id: documents.value.length + index + 1,
+        name: file.name,
+        type: getFileTypeFromMime(file.type),
+        size: formatFileSize(file.size),
+        uploadDate: new Date().toLocaleString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        }),
+        url: '#'
+      }))
+      documents.value.push(...newDocs)
+    }
+    
+    console.log('RFQ updated:', rfqData.value)
+    console.log('New documents:', editedDocuments.value)
+    
+    // Show success message
+    alert(`RFQ ${editFormData.value.rfqNo} updated successfully!`)
+    
+    // Exit edit mode
+    exitEditMode()
+    
+  } catch (error) {
+    console.error('Error updating RFQ:', error)
+    alert('Error updating RFQ. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 const sendToOEM = () => {
@@ -325,6 +695,64 @@ const downloadDocument = (doc: any) => {
   console.log('Downloading:', doc.name)
   alert(`Downloading ${doc.name}`)
   // In real app, this would trigger actual download
+}
+
+// Document management methods
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    addFiles(Array.from(target.files))
+  }
+}
+
+const handleFileDrop = (event: DragEvent) => {
+  isDragOver.value = false
+  if (event.dataTransfer?.files) {
+    addFiles(Array.from(event.dataTransfer.files))
+  }
+}
+
+const addFiles = (files: File[]) => {
+  const validFiles = files.filter(file => {
+    const validTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/jpg',
+      'image/png'
+    ]
+    return validTypes.includes(file.type) || file.name.endsWith('.dwg')
+  })
+  
+  editedDocuments.value.push(...validFiles)
+}
+
+const removeExistingDocument = (index: number) => {
+  documents.value.splice(index, 1)
+}
+
+const removeNewDocument = (index: number) => {
+  editedDocuments.value.splice(index, 1)
+}
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const getFileTypeFromMime = (mimeType: string) => {
+  if (mimeType.includes('pdf')) return 'PDF'
+  if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'Excel'
+  if (mimeType.includes('word') || mimeType.includes('document')) return 'Word'
+  if (mimeType.includes('image')) return 'Image'
+  if (mimeType.includes('dwg')) return 'DWG'
+  return 'FILE'
 }
 
 // Helper functions

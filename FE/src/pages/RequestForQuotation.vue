@@ -112,6 +112,9 @@
                   Date
                   <span v-if="sortColumn === 'date'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  LAST EDITED BY
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -157,6 +160,15 @@
                 <td class="px-4 py-3 text-sm text-gray-600">
                   {{ rfq.date }}
                 </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center space-x-2">
+                    <Avatar>
+                      <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium">
+                        {{ rfq.lastEditedBy.initials }}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -187,6 +199,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 // Router
 const router = useRouter()
@@ -227,7 +240,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Under Review',
     date: '08/01/2025 2:30PM',
-    timestamp: new Date('2025-01-08T14:30:00').getTime()
+    timestamp: new Date('2025-01-08T14:30:00').getTime(),
+    lastEditedBy: {
+      name: 'Admin User',
+      initials: 'AD',
+      timestamp: '08/01/2025 2:30PM'
+    }
   },
   {
     no: 2,
@@ -239,7 +257,12 @@ const rfqList = ref([
     quantity: 3,
     status: 'Sent to OEM',
     date: '08/01/2025 10:15AM',
-    timestamp: new Date('2025-01-08T10:15:00').getTime()
+    timestamp: new Date('2025-01-08T10:15:00').getTime(),
+    lastEditedBy: {
+      name: 'John Smith',
+      initials: 'JS',
+      timestamp: '08/01/2025 10:15AM'
+    }
   },
   {
     no: 3,
@@ -251,7 +274,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Quoted',
     date: '07/01/2025 3:45PM',
-    timestamp: new Date('2025-01-07T15:45:00').getTime()
+    timestamp: new Date('2025-01-07T15:45:00').getTime(),
+    lastEditedBy: {
+      name: 'Sarah Wilson',
+      initials: 'SW',
+      timestamp: '07/01/2025 3:45PM'
+    }
   },
   {
     no: 4,
@@ -263,7 +291,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Under Review',
     date: '06/01/2025 11:20AM',
-    timestamp: new Date('2025-01-06T11:20:00').getTime()
+    timestamp: new Date('2025-01-06T11:20:00').getTime(),
+    lastEditedBy: {
+      name: 'Mike Johnson',
+      initials: 'MJ',
+      timestamp: '06/01/2025 11:20AM'
+    }
   },
   {
     no: 5,
@@ -275,7 +308,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Sent to OEM',
     date: '05/01/2025 4:10PM',
-    timestamp: new Date('2025-01-05T16:10:00').getTime()
+    timestamp: new Date('2025-01-05T16:10:00').getTime(),
+    lastEditedBy: {
+      name: 'Lisa Brown',
+      initials: 'LB',
+      timestamp: '05/01/2025 4:10PM'
+    }
   },
   {
     no: 6,
@@ -287,7 +325,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Quoted',
     date: '04/01/2025 9:30AM',
-    timestamp: new Date('2025-01-04T09:30:00').getTime()
+    timestamp: new Date('2025-01-04T09:30:00').getTime(),
+    lastEditedBy: {
+      name: 'David Lee',
+      initials: 'DL',
+      timestamp: '04/01/2025 9:30AM'
+    }
   },
   {
     no: 7,
@@ -299,7 +342,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Under Review',
     date: '03/01/2025 1:15PM',
-    timestamp: new Date('2025-01-03T13:15:00').getTime()
+    timestamp: new Date('2025-01-03T13:15:00').getTime(),
+    lastEditedBy: {
+      name: 'Emma Davis',
+      initials: 'ED',
+      timestamp: '03/01/2025 1:15PM'
+    }
   },
   {
     no: 8,
@@ -311,7 +359,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Quoted',
     date: '01/01/2025 8:45AM',
-    timestamp: new Date('2025-01-01T08:45:00').getTime()
+    timestamp: new Date('2025-01-01T08:45:00').getTime(),
+    lastEditedBy: {
+      name: 'Tom Wilson',
+      initials: 'TW',
+      timestamp: '01/01/2025 8:45AM'
+    }
   },
   {
     no: 9,
@@ -323,7 +376,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Sent to OEM',
     date: '31/12/2024 2:50PM',
-    timestamp: new Date('2024-12-31T14:50:00').getTime()
+    timestamp: new Date('2024-12-31T14:50:00').getTime(),
+    lastEditedBy: {
+      name: 'Anna Garcia',
+      initials: 'AG',
+      timestamp: '31/12/2024 2:50PM'
+    }
   },
   {
     no: 10,
@@ -335,7 +393,12 @@ const rfqList = ref([
     quantity: 2,
     status: 'Under Review',
     date: '25/12/2024 10:30AM',
-    timestamp: new Date('2024-12-25T10:30:00').getTime()
+    timestamp: new Date('2024-12-25T10:30:00').getTime(),
+    lastEditedBy: {
+      name: 'Chris Taylor',
+      initials: 'CT',
+      timestamp: '25/12/2024 10:30AM'
+    }
   },
   {
     no: 11,
@@ -347,7 +410,12 @@ const rfqList = ref([
     quantity: 2,
     status: 'Quoted',
     date: '24/12/2024 3:20PM',
-    timestamp: new Date('2024-12-24T15:20:00').getTime()
+    timestamp: new Date('2024-12-24T15:20:00').getTime(),
+    lastEditedBy: {
+      name: 'Maria Rodriguez',
+      initials: 'MR',
+      timestamp: '24/12/2024 3:20PM'
+    }
   },
   {
     no: 13,
@@ -359,7 +427,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Sent to OEM',
     date: '23/12/2024 11:45AM',
-    timestamp: new Date('2024-12-23T11:45:00').getTime()
+    timestamp: new Date('2024-12-23T11:45:00').getTime(),
+    lastEditedBy: {
+      name: 'Kevin Chen',
+      initials: 'KC',
+      timestamp: '23/12/2024 11:45AM'
+    }
   },
   {
     no: 14,
@@ -371,7 +444,12 @@ const rfqList = ref([
     quantity: 1,
     status: 'Under Review',
     date: '18/12/2024 4:15PM',
-    timestamp: new Date('2024-12-18T16:15:00').getTime()
+    timestamp: new Date('2024-12-18T16:15:00').getTime(),
+    lastEditedBy: {
+      name: 'Rachel Kim',
+      initials: 'RK',
+      timestamp: '18/12/2024 4:15PM'
+    }
   }
 ])
 

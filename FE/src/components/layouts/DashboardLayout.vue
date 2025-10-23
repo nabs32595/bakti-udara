@@ -81,7 +81,7 @@
                       :is-active="$route.name === 'Roles & Permissions'"
                       @click="$router.push('/roles')"
                   >
-                    Roles & Permissions
+                    Roles
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

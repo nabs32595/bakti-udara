@@ -106,9 +106,9 @@ const changeUserRole = (user: { id: string, roleId: string }, event: Event) => {
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
+        <h2 class="text-2xl font-bold tracking-tight">Roles</h2>
         <p class="text-muted-foreground">
-          Manage user roles and access permissions
+          Manage user roles
         </p>
       </div>
     </div>
@@ -134,7 +134,7 @@ const changeUserRole = (user: { id: string, roleId: string }, event: Event) => {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle>All Roles</CardTitle>
-                <CardDescription>Manage system roles and permissions</CardDescription>
+                <CardDescription>Manage system roles</CardDescription>
               </div>
               <div class="flex items-center gap-4">
                 <div class="relative w-72">

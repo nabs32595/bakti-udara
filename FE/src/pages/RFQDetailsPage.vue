@@ -330,6 +330,25 @@
                   </div>
                 </div>
               </div>
+              
+              <!-- Additional spacing -->
+              <div class="h-6"></div>
+              
+              <!-- Last Edited By Section -->
+              <div class="pt-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                  <Avatar>
+                    <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                      {{ rfqData?.lastEditedBy?.initials || 'AD' }}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Last Edited By</p>
+                    <p class="text-xs text-gray-500">{{ rfqData?.lastEditedBy?.name || 'Admin User' }}</p>
+                    <p class="text-xs text-gray-400">{{ rfqData?.lastEditedBy?.timestamp || rfqData?.date }}</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -394,6 +413,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Conflict Resolution Dialog -->
+    <ConflictResolutionDialog
+      :open="showConflictDialog"
+      :conflict-data="conflictData"
+      @update:open="showConflictDialog = $event"
+      @discard-changes="handleDiscardChanges"
+      @force-save="handleForceSave"
+    />
   </div>
 </template>
 
@@ -405,6 +433,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
 
 // Router
 const route = useRoute()
@@ -466,6 +496,11 @@ const editedDocuments = ref<any[]>([])
 const originalDocuments = ref<any[]>([])
 const fileInput = ref<HTMLInputElement | null>(null)
 
+// Conflict resolution state
+const showConflictDialog = ref(false)
+const conflictData = ref<any[]>([])
+const currentDbVersion = ref<any>({})
+
 // Mock RFQ data (in real app, this would come from API)
 const mockRFQData = [
   {
@@ -478,7 +513,12 @@ const mockRFQData = [
     quantity: 1,
     status: 'Under Review',
     date: '08/01/2025 2:30PM',
-    timestamp: new Date('2025-01-08T14:30:00').getTime()
+    timestamp: new Date('2025-01-08T14:30:00').getTime(),
+    lastEditedBy: {
+      name: 'Admin User',
+      initials: 'AD',
+      timestamp: '08/01/2025 2:30PM'
+    }
   },
   {
     no: 2,
@@ -490,7 +530,12 @@ const mockRFQData = [
     quantity: 3,
     status: 'Sent to OEM',
     date: '08/01/2025 10:15AM',
-    timestamp: new Date('2025-01-08T10:15:00').getTime()
+    timestamp: new Date('2025-01-08T10:15:00').getTime(),
+    lastEditedBy: {
+      name: 'John Smith',
+      initials: 'JS',
+      timestamp: '08/01/2025 10:15AM'
+    }
   },
   {
     no: 3,
@@ -502,7 +547,12 @@ const mockRFQData = [
     quantity: 1,
     status: 'Quoted',
     date: '07/01/2025 3:45PM',
-    timestamp: new Date('2025-01-07T15:45:00').getTime()
+    timestamp: new Date('2025-01-07T15:45:00').getTime(),
+    lastEditedBy: {
+      name: 'Sarah Wilson',
+      initials: 'SW',
+      timestamp: '07/01/2025 3:45PM'
+    }
   }
 ]
 
@@ -611,59 +661,63 @@ const saveChanges = async () => {
   isSubmitting.value = true
   
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // Update RFQ data with new values
-    rfqData.value = {
-      ...rfqData.value,
-      no: editFormData.value.no,
-      rfqNo: editFormData.value.rfqNo,
-      referenceNo: editFormData.value.referenceNo,
-      pno: editFormData.value.pno,
-      desc: editFormData.value.desc,
-      quantity: editFormData.value.quantity,
-      aes: editFormData.value.aes,
-      status: editFormData.value.status,
-      date: new Date().toLocaleString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
+    // Mock conflict detection (30% chance of conflicts)
+    const hasConflicts = Math.random() < 0.3
+    
+    if (hasConflicts) {
+      // Simulate current database version with some changes
+      currentDbVersion.value = {
+        no: editFormData.value.no,
+        rfqNo: editFormData.value.rfqNo,
+        referenceNo: editFormData.value.referenceNo + ' (modified)',
+        pno: editFormData.value.pno + '-UPDATED',
+        desc: editFormData.value.desc + ' - Updated by another user',
+        quantity: editFormData.value.quantity + 1,
+        aes: editFormData.value.aes === 'A' ? 'E' : 'A',
+        status: editFormData.value.status === 'Under Review' ? 'Sent to OEM' : 'Under Review'
+      }
+      
+      // Generate conflict data for fields that have changed
+      const conflicts: Array<{
+        key: string
+        label: string
+        yourValue: string | number
+        currentValue: string | number
+      }> = []
+      const fieldMappings = [
+        { key: 'referenceNo', label: 'Reference No' },
+        { key: 'pno', label: 'Part Number' },
+        { key: 'desc', label: 'Description' },
+        { key: 'quantity', label: 'Quantity' },
+        { key: 'aes', label: 'AES Classification' },
+        { key: 'status', label: 'Status' }
+      ]
+      
+      fieldMappings.forEach(field => {
+        if (editFormData.value[field.key as keyof typeof editFormData.value] !== currentDbVersion.value[field.key]) {
+          conflicts.push({
+            key: field.key,
+            label: field.label,
+            yourValue: editFormData.value[field.key as keyof typeof editFormData.value],
+            currentValue: currentDbVersion.value[field.key]
+          })
+        }
       })
+      
+      // If we have conflicts, show the dialog
+      if (conflicts.length > 0) {
+        conflictData.value = conflicts
+        showConflictDialog.value = true
+        isSubmitting.value = false
+        return
+      }
     }
     
-    // Update documents (in real app, this would be handled by API)
-    if (editedDocuments.value.length > 0) {
-      // Add new documents to the list
-      const newDocs = editedDocuments.value.map((file, index) => ({
-        id: documents.value.length + index + 1,
-        name: file.name,
-        type: getFileTypeFromMime(file.type),
-        size: formatFileSize(file.size),
-        uploadDate: new Date().toLocaleString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        }),
-        url: '#'
-      }))
-      documents.value.push(...newDocs)
-    }
-    
-    console.log('RFQ updated:', rfqData.value)
-    console.log('New documents:', editedDocuments.value)
-    
-    // Show success message
-    alert(`RFQ ${editFormData.value.rfqNo} updated successfully!`)
-    
-    // Exit edit mode
-    exitEditMode()
+    // No conflicts - proceed with normal save
+    await performSave()
     
   } catch (error) {
     console.error('Error updating RFQ:', error)
@@ -671,6 +725,59 @@ const saveChanges = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+const performSave = async () => {
+  // Update RFQ data with new values
+  rfqData.value = {
+    ...rfqData.value,
+    no: editFormData.value.no,
+    rfqNo: editFormData.value.rfqNo,
+    referenceNo: editFormData.value.referenceNo,
+    pno: editFormData.value.pno,
+    desc: editFormData.value.desc,
+    quantity: editFormData.value.quantity,
+    aes: editFormData.value.aes,
+    status: editFormData.value.status,
+    date: new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+  
+  // Update documents (in real app, this would be handled by API)
+  if (editedDocuments.value.length > 0) {
+    // Add new documents to the list
+    const newDocs = editedDocuments.value.map((file, index) => ({
+      id: documents.value.length + index + 1,
+      name: file.name,
+      type: getFileTypeFromMime(file.type),
+      size: formatFileSize(file.size),
+      uploadDate: new Date().toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }),
+      url: '#'
+    }))
+    documents.value.push(...newDocs)
+  }
+  
+  console.log('RFQ updated:', rfqData.value)
+  console.log('New documents:', editedDocuments.value)
+  
+  // Show success message
+  alert(`RFQ ${editFormData.value.rfqNo} updated successfully!`)
+  
+  // Exit edit mode
+  exitEditMode()
 }
 
 const sendToOEM = () => {
@@ -688,6 +795,43 @@ const deleteRFQ = () => {
     console.log('Delete RFQ:', rfqData.value?.rfqNo)
     alert(`Deleting ${rfqData.value?.rfqNo}`)
     goBack()
+  }
+}
+
+// Conflict resolution handlers
+const handleDiscardChanges = () => {
+  // Reset form to original values
+  editFormData.value = {
+    no: rfqData.value?.no || '',
+    rfqNo: rfqData.value?.rfqNo || '',
+    referenceNo: rfqData.value?.referenceNo || '',
+    pno: rfqData.value?.pno || '',
+    desc: rfqData.value?.desc || '',
+    quantity: rfqData.value?.quantity || 1,
+    aes: rfqData.value?.aes || '',
+    status: rfqData.value?.status || ''
+  }
+  
+  // Clear any errors
+  editErrors.value = {}
+  
+  // Reset documents
+  editedDocuments.value = []
+  
+  console.log('Changes discarded, form reset to original values')
+}
+
+const handleForceSave = async () => {
+  isSubmitting.value = true
+  
+  try {
+    // Proceed with force save
+    await performSave()
+  } catch (error) {
+    console.error('Error force saving RFQ:', error)
+    alert('Error saving RFQ. Please try again.')
+  } finally {
+    isSubmitting.value = false
   }
 }
 

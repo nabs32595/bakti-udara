@@ -205,10 +205,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 const router = useRouter()
 
 // Mock data for RFQ statistics
-const totalRFQs = ref(13)
-const pendingReview = ref(5)
-const sentToOEM = ref(4)
-const quoted = ref(4)
+// const totalRFQs = ref(13)
+// const pendingReview = ref(5)
+// const sentToOEM = ref(4)
+// const quoted = ref(4)
 
 // Search and filter state
 const searchQuery = ref('')
@@ -576,39 +576,39 @@ const bulkDelete = () => {
   }
 }
 
-const exportSelected = () => {
-  const toExport = selectedRFQs.value.length > 0 
-    ? filteredAndSortedRFQs.value.filter(rfq => selectedRFQs.value.includes(rfq.rfqNo))
-    : filteredAndSortedRFQs.value
-  
-  console.log('Exporting:', toExport)
-  alert(`Exporting ${toExport.length} RFQ(s)`)
-  // Here you would implement CSV/Excel export
-}
+// const exportSelected = () => {
+//   const toExport = selectedRFQs.value.length > 0
+//     ? filteredAndSortedRFQs.value.filter(rfq => selectedRFQs.value.includes(rfq.rfqNo))
+//     : filteredAndSortedRFQs.value
+//
+//   console.log('Exporting:', toExport)
+//   alert(`Exporting ${toExport.length} RFQ(s)`)
+//   // Here you would implement CSV/Excel export
+// }
 
 // Methods: Individual actions
 const viewRFQDetails = (rfqNo: string) => {
   router.push(`/request-for-quotation/${rfqNo}`)
 }
 
-const viewDetails = (rfqNo: string) => {
-  console.log('View details:', rfqNo)
-  alert(`Viewing details for ${rfqNo}`)
-  // Here you would navigate to details page or open modal
-}
+// const viewDetails = (rfqNo: string) => {
+//   console.log('View details:', rfqNo)
+//   alert(`Viewing details for ${rfqNo}`)
+//   // Here you would navigate to details page or open modal
+// }
+//
+// const editRFQ = (rfqNo: string) => {
+//   console.log('Edit RFQ:', rfqNo)
+//   alert(`Editing ${rfqNo}`)
+//   // Here you would navigate to edit page or open modal
+// }
 
-const editRFQ = (rfqNo: string) => {
-  console.log('Edit RFQ:', rfqNo)
-  alert(`Editing ${rfqNo}`)
-  // Here you would navigate to edit page or open modal
-}
-
-const deleteRFQ = (rfqNo: string) => {
-  if (confirm(`Are you sure you want to delete ${rfqNo}?`)) {
-    console.log('Delete RFQ:', rfqNo)
-    // Here you would make API call to delete
-  }
-}
+// const deleteRFQ = (rfqNo: string) => {
+//   if (confirm(`Are you sure you want to delete ${rfqNo}?`)) {
+//     console.log('Delete RFQ:', rfqNo)
+//     // Here you would make API call to delete
+//   }
+// }
 
 // Methods: Pagination
 const prevPage = () => {

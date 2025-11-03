@@ -176,17 +176,6 @@ const selectTemplate = (template: EmailTemplate) => {
   selectedTemplate.value = template
 }
 
-const editTemplate = (template: EmailTemplate) => {
-  // Implementation for editing template
-  console.log('Edit template:', template)
-}
-
-const deleteTemplate = (templateId: number) => {
-  if (confirm('Are you sure you want to delete this template?')) {
-    templates.value = templates.value.filter(t => t.id !== templateId)
-  }
-}
-
 const previewTemplate = (template: EmailTemplate) => {
   selectedTemplate.value = template
   showPreview.value = true

@@ -41,5 +41,4 @@ import EmailTemplates from '@/pages/email/EmailTemplates.vue'
 import EmailSettings from '@/pages/email/EmailSettings.vue'
 import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs'
 import {Mail, Settings} from 'lucide-vue-next'
-import {Card} from "@/components/ui/card";
 </script>

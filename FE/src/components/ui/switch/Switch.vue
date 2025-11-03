@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
-import { Switch as SwitchPrimitive } from "reka-ui"
 import { cn } from "@/lib/utils"
 
 const props = defineProps<{

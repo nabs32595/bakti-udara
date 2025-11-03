@@ -332,27 +332,6 @@ const handleSubmit = async () => {
     // Generate final RFQ number
     const rfqNumber = `${rfqPrefix.value}${formData.value.referenceNo}`
     
-    // Create RFQ object
-    const newRFQ = {
-      no: Math.floor(Math.random() * 1000) + 1, // This would come from API
-      desc: formData.value.desc,
-      referenceNo: formData.value.referenceNo,
-      rfqNo: rfqNumber,
-      pno: formData.value.pno,
-      aes: formData.value.aes,
-      quantity: formData.value.quantity,
-      status: formData.value.status,
-      date: new Date().toLocaleString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      }),
-      timestamp: Date.now()
-    }
-    
     // Show success message
     toast({
       title: 'Success',

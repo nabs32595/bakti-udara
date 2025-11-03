@@ -250,9 +250,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 // Router
 const router = useRouter()
+
+// Toast
+const { toast } = useToast()
 
 // Form data
 const formData = ref({
@@ -349,18 +353,22 @@ const handleSubmit = async () => {
       timestamp: Date.now()
     }
     
-    console.log('Creating RFQ:', newRFQ)
-    console.log('Uploaded files:', uploadedFiles.value)
-    
     // Show success message
-    alert(`RFQ ${rfqNumber} created successfully!`)
+    toast({
+      title: 'Success',
+      description: `RFQ ${rfqNumber} created successfully!`
+    })
     
     // Navigate to RFQ details or list
     router.push('/request-for-quotation')
     
   } catch (error) {
     console.error('Error creating RFQ:', error)
-    alert('Error creating RFQ. Please try again.')
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: 'Error creating RFQ. Please try again.'
+    })
   } finally {
     isSubmitting.value = false
   }

@@ -50,6 +50,9 @@
 import {ref} from 'vue'
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 interface EmailTemplate {
   id: number
@@ -86,9 +89,9 @@ const templates = ref<EmailTemplate[]>([
 
 const saveTemplateSettings = () => {
   // Here you would typically save the settings to your backend
-  console.log('Saving template settings:', templates.value)
-
-  // Show success message (in a real app, you might want to use a toast notification)
-  alert('Template settings saved successfully!')
+  toast({
+    title: 'Success',
+    description: 'Template settings saved successfully!'
+  })
 }
 </script>

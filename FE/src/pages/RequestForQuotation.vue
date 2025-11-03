@@ -200,9 +200,13 @@ import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 // Router
 const router = useRouter()
+
+// Toast
+const { toast } = useToast()
 
 // Mock data for RFQ statistics
 // const totalRFQs = ref(13)
@@ -555,22 +559,25 @@ const clearSelection = () => {
 
 // Methods: Bulk actions
 const bulkSendToOEM = () => {
-  console.log('Sending to OEM:', selectedRFQs.value)
-  alert(`Sending ${selectedRFQs.value.length} RFQ(s) to OEM`)
+  toast({
+    title: 'Sending to OEM',
+    description: `Sending ${selectedRFQs.value.length} RFQ(s) to OEM`
+  })
   // Here you would make API call to update status
   clearSelection()
 }
 
 const bulkMarkQuoted = () => {
-  console.log('Marking as quoted:', selectedRFQs.value)
-  alert(`Marking ${selectedRFQs.value.length} RFQ(s) as quoted`)
+  toast({
+    title: 'Marked as Quoted',
+    description: `Marking ${selectedRFQs.value.length} RFQ(s) as quoted`
+  })
   // Here you would make API call to update status
   clearSelection()
 }
 
 const bulkDelete = () => {
   if (confirm(`Are you sure you want to delete ${selectedRFQs.value.length} RFQ(s)?`)) {
-    console.log('Deleting:', selectedRFQs.value)
     // Here you would make API call to delete
     clearSelection()
   }

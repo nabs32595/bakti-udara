@@ -29,6 +29,62 @@
           </Badge>
         </div>
       </div>
+      
+      <!-- Collaborators Section -->
+      <div class="mt-4 pt-4 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span class="text-sm font-medium text-gray-700">Collaborators</span>
+              <Badge v-if="collaborators.length > 0" class="bg-gray-200 text-gray-800 border-gray-300 text-xs">
+                {{ collaborators.length }}
+              </Badge>
+            </div>
+            
+            <!-- Collaborator Avatars -->
+            <div class="flex items-center space-x-2 ml-2">
+              <div
+                v-for="collaborator in collaborators"
+                :key="collaborator.id"
+                class="relative group"
+              >
+                <Avatar class="cursor-pointer hover:ring-2 hover:ring-gray-400 transition-all">
+                  <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium">
+                    {{ collaborator.initials }}
+                  </AvatarFallback>
+                </Avatar>
+                <!-- Tooltip on hover -->
+                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-auto">
+                  <span>{{ collaborator.name }}</span>
+                  <button
+                    @click.stop="handleCollaboratorRemoved(collaborator.id)"
+                    class="ml-2 text-gray-300 hover:text-white inline-block"
+                    title="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Add Collaborator Button -->
+              <Button
+                variant="outline"
+                size="sm"
+                @click="showAddDialog = true"
+                class="h-8 px-2 text-xs"
+              >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Content -->
@@ -420,7 +476,16 @@
       :conflict-data="conflictData"
       @update:open="showConflictDialog = $event"
       @discard-changes="handleDiscardChanges"
-      @force-save="handleForceSave"
+      @resolve-conflicts="handleResolveConflicts"
+    />
+
+    <!-- Add Collaborator Dialog -->
+    <AddCollaboratorDialog
+      :open="showAddDialog"
+      :existing-collaborators="collaborators"
+      :available-users="availableUsers"
+      @update:open="showAddDialog = $event"
+      @add-collaborator="handleAddCollaborator"
     />
   </div>
 </template>
@@ -435,13 +500,46 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
+import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 // Router
 const route = useRoute()
 const router = useRouter()
 
+// Toast
+const { toast } = useToast()
+
 // Data
 const rfqData = ref<any>(null)
+
+// Collaborators state
+const collaborators = ref([
+  {
+    id: '2',
+    name: 'erma',
+    email: 'erma@baktiudara.com',
+    initials: 'ER',
+    addedAt: '08/01/2025 1:00PM'
+  },
+  {
+    id: '3',
+    name: 'adda',
+    email: 'adda@baktiudara.com',
+    initials: 'AD',
+    addedAt: '08/01/2025 12:30PM'
+  }
+])
+
+// Available users (reused from RolesPage)
+const availableUsers = ref([
+  { id: '1', name: 'aliff', email: 'aliff@baktiudara.com' },
+  { id: '2', name: 'erma', email: 'erma@baktiudara.com' },
+  { id: '3', name: 'adda', email: 'adda@baktiudara.com' },
+  { id: '7', name: 'shahmail', email: 'shahmail@baktiudara.com' },
+  { id: '8', name: 'zico', email: 'zico@baktiudara.com' }
+])
+
 const documents = ref([
   {
     id: 1,
@@ -501,6 +599,9 @@ const showConflictDialog = ref(false)
 const conflictData = ref<any[]>([])
 const currentDbVersion = ref<any>({})
 
+// Add collaborator dialog state
+const showAddDialog = ref(false)
+
 // Mock RFQ data (in real app, this would come from API)
 const mockRFQData = [
   {
@@ -518,7 +619,23 @@ const mockRFQData = [
       name: 'Admin User',
       initials: 'AD',
       timestamp: '08/01/2025 2:30PM'
-    }
+    },
+    collaborators: [
+      {
+        id: '2',
+        name: 'erma',
+        email: 'erma@baktiudara.com',
+        initials: 'ER',
+        addedAt: '08/01/2025 1:00PM'
+      },
+      {
+        id: '3',
+        name: 'adda',
+        email: 'adda@baktiudara.com',
+        initials: 'AD',
+        addedAt: '08/01/2025 12:30PM'
+      }
+    ]
   },
   {
     no: 2,
@@ -670,14 +787,14 @@ const saveChanges = async () => {
     if (hasConflicts) {
       // Simulate current database version with some changes
       currentDbVersion.value = {
-        no: editFormData.value.no,
-        rfqNo: editFormData.value.rfqNo,
-        referenceNo: editFormData.value.referenceNo + ' (modified)',
-        pno: editFormData.value.pno + '-UPDATED',
+        // no: editFormData.value.no,
+        // rfqNo: editFormData.value.rfqNo,
+        // referenceNo: editFormData.value.referenceNo + ' (modified)',
+        // pno: editFormData.value.pno + '-UPDATED',
         desc: editFormData.value.desc + ' - Updated by another user',
-        quantity: editFormData.value.quantity + 1,
-        aes: editFormData.value.aes === 'A' ? 'E' : 'A',
-        status: editFormData.value.status === 'Under Review' ? 'Sent to OEM' : 'Under Review'
+        // quantity: editFormData.value.quantity + 1,
+        // aes: editFormData.value.aes === 'A' ? 'E' : 'A',
+        // status: editFormData.value.status === 'Under Review' ? 'Sent to OEM' : 'Under Review'
       }
       
       // Generate conflict data for fields that have changed
@@ -688,12 +805,12 @@ const saveChanges = async () => {
         currentValue: string | number
       }> = []
       const fieldMappings = [
-        { key: 'referenceNo', label: 'Reference No' },
-        { key: 'pno', label: 'Part Number' },
+        // { key: 'referenceNo', label: 'Reference No' },
+        // { key: 'pno', label: 'Part Number' },
         { key: 'desc', label: 'Description' },
-        { key: 'quantity', label: 'Quantity' },
-        { key: 'aes', label: 'AES Classification' },
-        { key: 'status', label: 'Status' }
+        // { key: 'quantity', label: 'Quantity' },
+        // { key: 'aes', label: 'AES Classification' },
+        // { key: 'status', label: 'Status' }
       ]
       
       fieldMappings.forEach(field => {
@@ -721,7 +838,11 @@ const saveChanges = async () => {
     
   } catch (error) {
     console.error('Error updating RFQ:', error)
-    alert('Error updating RFQ. Please try again.')
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: 'Error updating RFQ. Please try again.'
+    })
   } finally {
     isSubmitting.value = false
   }
@@ -770,30 +891,36 @@ const performSave = async () => {
     documents.value.push(...newDocs)
   }
   
-  console.log('RFQ updated:', rfqData.value)
-  console.log('New documents:', editedDocuments.value)
-  
   // Show success message
-  alert(`RFQ ${editFormData.value.rfqNo} updated successfully!`)
+  toast({
+    title: 'Success',
+    description: `RFQ ${editFormData.value.rfqNo} updated successfully!`
+  })
   
   // Exit edit mode
   exitEditMode()
 }
 
 const sendToOEM = () => {
-  console.log('Send to OEM:', rfqData.value?.rfqNo)
-  alert(`Sending ${rfqData.value?.rfqNo} to OEM`)
+  toast({
+    title: 'Sending to OEM',
+    description: `RFQ ${rfqData.value?.rfqNo} sent to OEM`
+  })
 }
 
 const markAsQuoted = () => {
-  console.log('Mark as quoted:', rfqData.value?.rfqNo)
-  alert(`Marking ${rfqData.value?.rfqNo} as quoted`)
+  toast({
+    title: 'Marked as Quoted',
+    description: `RFQ ${rfqData.value?.rfqNo} marked as quoted`
+  })
 }
 
 const deleteRFQ = () => {
   if (confirm(`Are you sure you want to delete ${rfqData.value?.rfqNo}?`)) {
-    console.log('Delete RFQ:', rfqData.value?.rfqNo)
-    alert(`Deleting ${rfqData.value?.rfqNo}`)
+    toast({
+      title: 'Deleted',
+      description: `RFQ ${rfqData.value?.rfqNo} deleted successfully`
+    })
     goBack()
   }
 }
@@ -817,27 +944,39 @@ const handleDiscardChanges = () => {
   
   // Reset documents
   editedDocuments.value = []
-  
-  console.log('Changes discarded, form reset to original values')
 }
 
-const handleForceSave = async () => {
+const handleResolveConflicts = async (resolutions: Array<{ key: string; selectedValue: string | number }>) => {
   isSubmitting.value = true
   
   try {
-    // Proceed with force save
+    // Update editFormData with resolved values
+    resolutions.forEach(resolution => {
+      const key = resolution.key as keyof typeof editFormData.value
+      if (key in editFormData.value) {
+        editFormData.value[key] = resolution.selectedValue as never
+      }
+    })
+    
+    // Proceed with save using resolved values
     await performSave()
   } catch (error) {
-    console.error('Error force saving RFQ:', error)
-    alert('Error saving RFQ. Please try again.')
+    console.error('Error saving resolved conflicts:', error)
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: 'Error saving RFQ. Please try again.'
+    })
   } finally {
     isSubmitting.value = false
   }
 }
 
 const downloadDocument = (doc: any) => {
-  console.log('Downloading:', doc.name)
-  alert(`Downloading ${doc.name}`)
+  toast({
+    title: 'Downloading',
+    description: `Starting download for ${doc.name}...`
+  })
   // In real app, this would trigger actual download
 }
 
@@ -939,6 +1078,59 @@ const getFileIcon = (type: string) => {
   return icons[type as keyof typeof icons] || 'FILE'
 }
 
+// Collaborator handlers
+const handleCollaboratorAdded = (collaborator: any) => {
+  toast({
+    title: 'Collaborator Added',
+    description: `${collaborator.name} has been added as a collaborator`
+  })
+}
+
+const handleCollaboratorRemoved = (collaboratorId: string) => {
+  const removed = collaborators.value.find(c => c.id === collaboratorId)
+  if (removed) {
+    const updatedCollaborators = collaborators.value.filter(c => c.id !== collaboratorId)
+    collaborators.value = updatedCollaborators
+    toast({
+      title: 'Collaborator Removed',
+      description: `${removed.name} has been removed from collaborators`
+    })
+  }
+}
+
+const handleAddCollaborator = (user: any) => {
+  const newCollaborator = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    initials: getCollaboratorInitials(user.name),
+    addedAt: new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+  
+  collaborators.value = [...collaborators.value, newCollaborator]
+  handleCollaboratorAdded(newCollaborator)
+  showAddDialog.value = false
+}
+
+const getCollaboratorInitials = (name: string): string => {
+  const parts = name.split(' ')
+  if (parts.length >= 2) {
+    const first = parts[0]?.[0] || ''
+    const second = parts[1]?.[0] || ''
+    if (first && second) {
+      return (first + second).toUpperCase()
+    }
+  }
+  return name.substring(0, 2).toUpperCase()
+}
+
 // Load RFQ data based on route parameter
 onMounted(() => {
   const rfqNo = route.params.rfqNo as string
@@ -946,6 +1138,10 @@ onMounted(() => {
   
   if (foundRFQ) {
     rfqData.value = foundRFQ
+    // Load collaborators from RFQ data if available
+    if (foundRFQ.collaborators) {
+      collaborators.value = foundRFQ.collaborators
+    }
   } else {
     // Handle case where RFQ not found
     console.error('RFQ not found:', rfqNo)

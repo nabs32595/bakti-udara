@@ -142,7 +142,6 @@ const router = useRouter()
 
 const handleLogout = () => {
   // In a real app, you would clear tokens, call logout API, etc.
-  console.log('Logging out...')
   router.push('/login')
 }
 </script>

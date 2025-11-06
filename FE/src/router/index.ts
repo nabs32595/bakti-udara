@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/request-for-quotation/:rfqNo',
     name: 'RFQ Details',
-    component: () => import('@/pages/RFQDetailsPage.vue')
+    component: () => import('@/pages/rfq/RFQDetailsPage.vue')
   },
   {
     path: '/quotations',

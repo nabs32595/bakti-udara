@@ -502,6 +502,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
 import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useLocalStorage } from '@/composables/useLocalStorage'
+import { 
+  INITIAL_MOCK_RFQ_DATA, 
+  INITIAL_DOCUMENTS, 
+  INITIAL_AVAILABLE_USERS, 
+  INITIAL_COLLABORATORS 
+} from '@/data/mockData/rfqDetails'
 
 // Router
 const route = useRoute()
@@ -513,67 +520,14 @@ const { toast } = useToast()
 // Data
 const rfqData = ref<any>(null)
 
-// Collaborators state
-const collaborators = ref([
-  {
-    id: '2',
-    name: 'erma',
-    email: 'erma@baktiudara.com',
-    initials: 'ER',
-    addedAt: '08/01/2025 1:00PM'
-  },
-  {
-    id: '3',
-    name: 'adda',
-    email: 'adda@baktiudara.com',
-    initials: 'AD',
-    addedAt: '08/01/2025 12:30PM'
-  }
-])
+// Collaborators state with localStorage persistence
+const collaborators = useLocalStorage('rfqCollaborators', INITIAL_COLLABORATORS)
 
-// Available users (reused from RolesPage)
-const availableUsers = ref([
-  { id: '1', name: 'aliff', email: 'aliff@baktiudara.com' },
-  { id: '2', name: 'erma', email: 'erma@baktiudara.com' },
-  { id: '3', name: 'adda', email: 'adda@baktiudara.com' },
-  { id: '7', name: 'shahmail', email: 'shahmail@baktiudara.com' },
-  { id: '8', name: 'zico', email: 'zico@baktiudara.com' }
-])
+// Available users with localStorage persistence
+const availableUsers = useLocalStorage('availableUsers', INITIAL_AVAILABLE_USERS)
 
-const documents = ref([
-  {
-    id: 1,
-    name: 'Technical Specifications.pdf',
-    type: 'PDF',
-    size: '2.4 MB',
-    uploadDate: '08/01/2025 1:45PM',
-    url: '#'
-  },
-  {
-    id: 2,
-    name: 'Engineering Drawings.dwg',
-    type: 'DWG',
-    size: '5.1 MB',
-    uploadDate: '07/01/2025 4:20PM',
-    url: '#'
-  },
-  {
-    id: 3,
-    name: 'Material Certificate.xlsx',
-    type: 'Excel',
-    size: '1.2 MB',
-    uploadDate: '05/01/2025 9:30AM',
-    url: '#'
-  },
-  {
-    id: 4,
-    name: 'Quality Inspection Report.pdf',
-    type: 'PDF',
-    size: '3.8 MB',
-    uploadDate: '01/01/2025 11:15AM',
-    url: '#'
-  }
-])
+// Documents with localStorage persistence
+const documents = useLocalStorage('rfqDocuments', INITIAL_DOCUMENTS)
 
 // Edit mode state management
 const isEditMode = ref(false)
@@ -602,76 +556,8 @@ const currentDbVersion = ref<any>({})
 // Add collaborator dialog state
 const showAddDialog = ref(false)
 
-// Mock RFQ data (in real app, this would come from API)
-const mockRFQData = [
-  {
-    no: 1,
-    desc: 'PANEL ASSY, FLOOR, LH',
-    referenceNo: '04',
-    rfqNo: 'RFQM50-08012025-0001-RO1',
-    pno: '5251409289',
-    aes: 'A',
-    quantity: 1,
-    status: 'Under Review',
-    date: '08/01/2025 2:30PM',
-    timestamp: new Date('2025-01-08T14:30:00').getTime(),
-    lastEditedBy: {
-      name: 'Admin User',
-      initials: 'AD',
-      timestamp: '08/01/2025 2:30PM'
-    },
-    collaborators: [
-      {
-        id: '2',
-        name: 'erma',
-        email: 'erma@baktiudara.com',
-        initials: 'ER',
-        addedAt: '08/01/2025 1:00PM'
-      },
-      {
-        id: '3',
-        name: 'adda',
-        email: 'adda@baktiudara.com',
-        initials: 'AD',
-        addedAt: '08/01/2025 12:30PM'
-      }
-    ]
-  },
-  {
-    no: 2,
-    desc: 'RELAY, SOCKET',
-    referenceNo: '04',
-    rfqNo: 'RFQM50-08012025-0002-RO1',
-    pno: '9742200100',
-    aes: 'E',
-    quantity: 3,
-    status: 'Sent to OEM',
-    date: '08/01/2025 10:15AM',
-    timestamp: new Date('2025-01-08T10:15:00').getTime(),
-    lastEditedBy: {
-      name: 'John Smith',
-      initials: 'JS',
-      timestamp: '08/01/2025 10:15AM'
-    }
-  },
-  {
-    no: 3,
-    desc: 'ROD ASSY, PUSH/PULL, FRONT',
-    referenceNo: '04',
-    rfqNo: 'RFQM50-08012025-0003-RO1',
-    pno: '576.10.09.021',
-    aes: 'E',
-    quantity: 1,
-    status: 'Quoted',
-    date: '07/01/2025 3:45PM',
-    timestamp: new Date('2025-01-07T15:45:00').getTime(),
-    lastEditedBy: {
-      name: 'Sarah Wilson',
-      initials: 'SW',
-      timestamp: '07/01/2025 3:45PM'
-    }
-  }
-]
+// Mock RFQ data with localStorage persistence
+const mockRFQData = useLocalStorage('mockRFQData', INITIAL_MOCK_RFQ_DATA)
 
 // Methods
 const goBack = () => {
@@ -850,6 +736,15 @@ const saveChanges = async () => {
 
 const performSave = async () => {
   // Update RFQ data with new values
+  const updatedDate = new Date().toLocaleString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+  
   rfqData.value = {
     ...rfqData.value,
     no: editFormData.value.no,
@@ -860,16 +755,26 @@ const performSave = async () => {
     quantity: editFormData.value.quantity,
     aes: editFormData.value.aes,
     status: editFormData.value.status,
-    date: new Date().toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    })
+    date: updatedDate,
+    // Preserve existing fields like collaborators, lastEditedBy, timestamp
+    collaborators: rfqData.value?.collaborators || [],
+    lastEditedBy: {
+      ...(rfqData.value?.lastEditedBy || {
+        name: 'Admin User',
+        initials: 'AD'
+      }),
+      timestamp: updatedDate
+    },
+    timestamp: new Date().getTime()
   }
-  
+
+  // Update the RFQ in mockRFQData array (which persists to localStorage)
+  const rfqIndex = mockRFQData.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
+  if (rfqIndex !== -1) {
+    // Merge with existing data to preserve all fields
+    mockRFQData.value[rfqIndex] = { ...mockRFQData.value[rfqIndex], ...rfqData.value }
+  }
+
   // Update documents (in real app, this would be handled by API)
   if (editedDocuments.value.length > 0) {
     // Add new documents to the list
@@ -1134,7 +1039,7 @@ const getCollaboratorInitials = (name: string): string => {
 // Load RFQ data based on route parameter
 onMounted(() => {
   const rfqNo = route.params.rfqNo as string
-  const foundRFQ = mockRFQData.find(rfq => rfq.rfqNo === rfqNo)
+  const foundRFQ = mockRFQData.value.find(rfq => rfq.rfqNo === rfqNo)
   
   if (foundRFQ) {
     rfqData.value = foundRFQ

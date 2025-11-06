@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue'
-import type {Role} from '@/types/roles'
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
@@ -8,53 +7,18 @@ import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
 import {Badge} from '@/components/ui/badge'
 import {Search, Shield, Users, UserCheck, Trash2} from 'lucide-vue-next'
+import { useLocalStorage } from '@/composables/useLocalStorage'
+import { INITIAL_ROLES, INITIAL_USERS } from '@/data/mockData/roles'
 
-// Sample data - replace with API calls
-const roles = ref<Role[]>([
-  {
-    id: '1',
-    name: 'Super Admin',
-    description: 'Full system access with all permissions',
-    permissions: ['dashboard.view', 'dashboard.analytics', 'rfq.view', 'rfq.create', 'rfq.edit', 'rfq.delete', 'quotation.view', 'quotation.create', 'quotation.edit', 'quotation.delete', 'quotation.approve', 'po.view', 'po.create', 'po.edit', 'po.delete', 'po.approve', 'delivery.view', 'delivery.create', 'delivery.edit', 'delivery.delete', 'user.view', 'user.create', 'user.edit', 'user.delete', 'role.view', 'role.create', 'role.edit', 'role.delete', 'email.view', 'email.edit', 'email.send', 'settings.view', 'settings.edit'],
-    userCount: 1,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-    isSystem: true
-  },
-  {
-    id: '2',
-    name: 'Operations',
-    description: 'Manage daily operations, RFQs, quotations, and purchase orders',
-    permissions: ['dashboard.view', 'rfq.view', 'rfq.create', 'rfq.edit', 'quotation.view', 'quotation.create', 'quotation.edit', 'quotation.approve', 'po.view', 'po.create', 'po.edit', 'delivery.view', 'delivery.create', 'delivery.edit'],
-    userCount: 2,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-02-10T14:30:00Z',
-    isSystem: false
-  },
-  {
-    id: '3',
-    name: 'Customer',
-    description: 'Customer access to view quotations and track orders',
-    permissions: ['dashboard.view', 'rfq.view', 'quotation.view', 'po.view', 'delivery.view'],
-    userCount: 2,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-03-05T09:15:00Z',
-    isSystem: false
-  }
-])
+// Roles with localStorage persistence
+const roles = useLocalStorage('roles', INITIAL_ROLES)
 
 const searchQuery = ref('')
 const userSearchQuery = ref('')
 const selectedRoleFilter = ref('')
 
-// Sample users data
-const users = ref([
-  {id: '1', name: 'aliff', email: 'aliff@baktiudara.com', roleId: '1'},
-  {id: '2', name: 'erma', email: 'erma@baktiudara.com', roleId: '2'},
-  {id: '3', name: 'adda', email: 'adda@baktiudara.com', roleId: '2'},
-  {id: '7', name: 'shahmail', email: 'shahmail@baktiudara.com', roleId: '3'},
-  {id: '8', name: 'zico', email: 'zico@baktiudara.com', roleId: '3'},
-])
+// Users with localStorage persistence
+const users = useLocalStorage('users', INITIAL_USERS)
 
 
 const filteredRoles = computed(() => {

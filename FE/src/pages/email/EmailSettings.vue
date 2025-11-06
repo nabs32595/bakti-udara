@@ -51,6 +51,8 @@ import {ref} from 'vue'
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useLocalStorage } from '@/composables/useLocalStorage'
+import { INITIAL_EMAIL_TEMPLATE_SETTINGS } from '@/data/mockData/emailSettings'
 
 const { toast } = useToast()
 
@@ -62,30 +64,8 @@ interface EmailTemplate {
   enabled: boolean
 }
 
-// Sample templates data
-const templates = ref<EmailTemplate[]>([
-  {
-    id: 1,
-    name: 'Quotation About To Expire',
-    description: 'Notify customers about expiring quotations',
-    category: 'Welcome',
-    enabled: true
-  },
-  {
-    id: 2,
-    name: 'Order Confirmation',
-    description: 'Confirm customer orders and provide details',
-    category: 'Transactional',
-    enabled: true
-  },
-  {
-    id: 3,
-    name: 'Delivery Notification',
-    description: 'Notify customers about delivery status',
-    category: 'Notification',
-    enabled: true
-  }
-])
+// Email template settings with localStorage persistence
+const templates = useLocalStorage('emailTemplateSettings', INITIAL_EMAIL_TEMPLATE_SETTINGS)
 
 const saveTemplateSettings = () => {
   // Here you would typically save the settings to your backend

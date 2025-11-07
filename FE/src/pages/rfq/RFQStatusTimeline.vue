@@ -23,32 +23,28 @@
         
         <!-- Timeline -->
         <div class="space-y-4">
-          <div class="flex items-center space-x-3">
-            <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
+          <div 
+            v-for="(status, index) in allStatuses" 
+            :key="status"
+            class="flex items-center space-x-3"
+          >
+            <div 
+              class="w-2 h-2 rounded-full" 
+              :class="getStatusDotClass(status, index)"
+            ></div>
             <div>
-              <p class="text-sm font-medium text-gray-900">Created</p>
-              <p class="text-xs text-gray-500">{{ rfqData?.date }}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3">
-            <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Under Review</p>
-              <p class="text-xs text-gray-500">08/01/2025 2:30PM</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3">
-            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
-            <div>
-              <p class="text-sm text-gray-500">Sent to OEM</p>
-              <p class="text-xs text-gray-400">Pending</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3">
-            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
-            <div>
-              <p class="text-sm text-gray-500">Quoted</p>
-              <p class="text-xs text-gray-400">Pending</p>
+              <p 
+                class="text-sm"
+                :class="isStatusCompleted(status) ? 'font-medium text-gray-900' : 'text-gray-500'"
+              >
+                {{ status }}
+              </p>
+              <p 
+                class="text-xs"
+                :class="isStatusCompleted(status) ? 'text-gray-500' : 'text-gray-400'"
+              >
+                {{ getStatusTimestamp(status) }}
+              </p>
             </div>
           </div>
         </div>
@@ -77,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -92,6 +89,29 @@ const emit = defineEmits<{
   'update:status': [value: string]
   'clear-error': [field: string]
 }>()
+
+// Define all possible statuses in order
+const allStatuses = ref(['Created', 'Under Review', 'Sent to OEM', 'Quoted'])
+
+// Helper function to check if a status is completed
+const isStatusCompleted = (status: string) => {
+  return props.rfqData?.statusTimeline?.some((item: any) => item.status === status)
+}
+
+// Helper function to get the timestamp for a status
+const getStatusTimestamp = (status: string) => {
+  const timelineItem = props.rfqData?.statusTimeline?.find((item: any) => item.status === status)
+  return timelineItem?.timestamp || ''
+}
+
+// Helper function to get the dot class based on status completion
+const getStatusDotClass = (status: string, index: number) => {
+  if (isStatusCompleted(status)) {
+    // Use different shades for completed statuses
+    return index === 0 ? 'bg-gray-600' : 'bg-gray-500'
+  }
+  return 'bg-gray-300'
+}
 
 const handleStatusChange = (value: string) => {
   emit('update:status', value)

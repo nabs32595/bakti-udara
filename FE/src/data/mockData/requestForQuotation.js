@@ -14,7 +14,67 @@ export const INITIAL_RFQ_LIST = [
       name: 'Admin User',
       initials: 'AD',
       timestamp: '08/01/2025 2:30PM'
-    }
+  },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '08/01/2025 2:30PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '08/01/2025 2:30PM'
+      }
+    ],
+    collaborators: [
+      {
+        id: '2',
+        name: 'erma',
+        email: 'erma@baktiudara.com',
+        initials: 'ER',
+        addedAt: '08/01/2025 1:00PM'
+      },
+      {
+        id: '3',
+        name: 'adda',
+        email: 'adda@baktiudara.com',
+        initials: 'AD',
+        addedAt: '08/01/2025 12:30PM'
+      }
+    ],
+    documents: [
+      {
+        id: 1,
+        name: 'Technical Specifications.pdf',
+        type: 'PDF',
+        size: '2.4 MB',
+        uploadDate: '08/01/2025 1:45PM',
+        url: '#'
+      },
+      {
+        id: 2,
+        name: 'Engineering Drawings.dwg',
+        type: 'DWG',
+        size: '5.1 MB',
+        uploadDate: '07/01/2025 4:20PM',
+        url: '#'
+      },
+      {
+        id: 3,
+        name: 'Material Certificate.xlsx',
+        type: 'Excel',
+        size: '1.2 MB',
+        uploadDate: '05/01/2025 9:30AM',
+        url: '#'
+      },
+      {
+        id: 4,
+        name: 'Quality Inspection Report.pdf',
+        type: 'PDF',
+        size: '3.8 MB',
+        uploadDate: '01/01/2025 11:15AM',
+        url: '#'
+      }
+    ]
   },
   {
     no: 2,
@@ -31,7 +91,40 @@ export const INITIAL_RFQ_LIST = [
       name: 'John Smith',
       initials: 'JS',
       timestamp: '08/01/2025 10:15AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '08/01/2025 10:15AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '08/01/2025 10:30AM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '08/01/2025 11:00AM'
+      }
+    ],
+    collaborators: [],
+    documents: [
+      {
+        id: 1,
+        name: 'Relay Specifications.pdf',
+        type: 'PDF',
+        size: '1.8 MB',
+        uploadDate: '08/01/2025 10:00AM',
+        url: '#'
+      },
+      {
+        id: 2,
+        name: 'Socket Assembly Guide.pdf',
+        type: 'PDF',
+        size: '2.2 MB',
+        uploadDate: '08/01/2025 9:45AM',
+        url: '#'
+      }
+    ]
   },
   {
     no: 3,
@@ -48,7 +141,36 @@ export const INITIAL_RFQ_LIST = [
       name: 'Sarah Wilson',
       initials: 'SW',
       timestamp: '07/01/2025 3:45PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '07/01/2025 3:45PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '07/01/2025 4:00PM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '07/01/2025 4:30PM'
+      },
+      {
+        status: 'Quoted',
+        timestamp: '08/01/2025 9:15AM'
+      }
+    ],
+    collaborators: [],
+    documents: [
+      {
+        id: 1,
+        name: 'Rod Assembly Drawing.dwg',
+        type: 'DWG',
+        size: '3.5 MB',
+        uploadDate: '07/01/2025 3:30PM',
+        url: '#'
+      }
+    ]
   },
   {
     no: 4,
@@ -65,7 +187,19 @@ export const INITIAL_RFQ_LIST = [
       name: 'Mike Johnson',
       initials: 'MJ',
       timestamp: '06/01/2025 11:20AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '06/01/2025 11:20AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '06/01/2025 11:35AM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 5,
@@ -82,7 +216,23 @@ export const INITIAL_RFQ_LIST = [
       name: 'Lisa Brown',
       initials: 'LB',
       timestamp: '05/01/2025 4:10PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '05/01/2025 4:10PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '05/01/2025 4:25PM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '06/01/2025 9:00AM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 6,
@@ -99,7 +249,27 @@ export const INITIAL_RFQ_LIST = [
       name: 'David Lee',
       initials: 'DL',
       timestamp: '04/01/2025 9:30AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '04/01/2025 9:30AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '04/01/2025 10:00AM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '05/01/2025 2:00PM'
+      },
+      {
+        status: 'Quoted',
+        timestamp: '06/01/2025 3:30PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 7,
@@ -116,7 +286,19 @@ export const INITIAL_RFQ_LIST = [
       name: 'Emma Davis',
       initials: 'ED',
       timestamp: '03/01/2025 1:15PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '03/01/2025 1:15PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '03/01/2025 1:30PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 8,
@@ -133,7 +315,27 @@ export const INITIAL_RFQ_LIST = [
       name: 'Tom Wilson',
       initials: 'TW',
       timestamp: '01/01/2025 8:45AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '01/01/2025 8:45AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '01/01/2025 9:00AM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '02/01/2025 10:30AM'
+      },
+      {
+        status: 'Quoted',
+        timestamp: '03/01/2025 2:15PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 9,
@@ -150,7 +352,23 @@ export const INITIAL_RFQ_LIST = [
       name: 'Anna Garcia',
       initials: 'AG',
       timestamp: '31/12/2024 2:50PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '31/12/2024 2:50PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '31/12/2024 3:10PM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '02/01/2025 11:00AM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 10,
@@ -167,7 +385,19 @@ export const INITIAL_RFQ_LIST = [
       name: 'Chris Taylor',
       initials: 'CT',
       timestamp: '25/12/2024 10:30AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '25/12/2024 10:30AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '25/12/2024 10:45AM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 11,
@@ -184,7 +414,27 @@ export const INITIAL_RFQ_LIST = [
       name: 'Maria Rodriguez',
       initials: 'MR',
       timestamp: '24/12/2024 3:20PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '24/12/2024 3:20PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '24/12/2024 3:40PM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '26/12/2024 9:30AM'
+      },
+      {
+        status: 'Quoted',
+        timestamp: '30/12/2024 4:15PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 13,
@@ -201,7 +451,23 @@ export const INITIAL_RFQ_LIST = [
       name: 'Kevin Chen',
       initials: 'KC',
       timestamp: '23/12/2024 11:45AM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '23/12/2024 11:45AM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '23/12/2024 12:00PM'
+      },
+      {
+        status: 'Sent to OEM',
+        timestamp: '24/12/2024 2:30PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   },
   {
     no: 14,
@@ -218,7 +484,19 @@ export const INITIAL_RFQ_LIST = [
       name: 'Rachel Kim',
       initials: 'RK',
       timestamp: '18/12/2024 4:15PM'
-    }
+    },
+    statusTimeline: [
+      {
+        status: 'Created',
+        timestamp: '18/12/2024 4:15PM'
+      },
+      {
+        status: 'Under Review',
+        timestamp: '18/12/2024 4:30PM'
+      }
+    ],
+    collaborators: [],
+    documents: []
   }
 ]
 

@@ -234,7 +234,7 @@ const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const filteredItemsCount = ref(0)
 
-// RFQ list with localStorage persistence
+// CHANGE THIS: Use the same localStorage key as the list page
 const rfqList = useLocalStorage('rfqList', INITIAL_RFQ_LIST)
 
 // Computed: Filtered and sorted RFQs

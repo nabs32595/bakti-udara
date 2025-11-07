@@ -98,11 +98,9 @@ import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { 
-  INITIAL_MOCK_RFQ_DATA, 
-  INITIAL_DOCUMENTS, 
-  INITIAL_AVAILABLE_USERS, 
-  INITIAL_COLLABORATORS 
+  INITIAL_AVAILABLE_USERS
 } from '@/data/mockData/rfqDetails'
+import { INITIAL_RFQ_LIST } from '@/data/mockData/requestForQuotation'
 
 // Router
 const route = useRoute()
@@ -114,14 +112,14 @@ const { toast } = useToast()
 // Data
 const rfqData = ref<any>(null)
 
-// Collaborators state with localStorage persistence
-const collaborators = useLocalStorage('rfqCollaborators', INITIAL_COLLABORATORS)
+// Collaborators state (from rfqData)
+const collaborators = ref<any[]>([])
 
 // Available users with localStorage persistence
 const availableUsers = useLocalStorage('availableUsers', INITIAL_AVAILABLE_USERS)
 
-// Documents with localStorage persistence
-const documents = useLocalStorage('rfqDocuments', INITIAL_DOCUMENTS)
+// Documents state (from rfqData)
+const documents = ref<any[]>([])
 
 // Edit mode state management
 const isEditMode = ref(false)
@@ -148,8 +146,8 @@ const currentDbVersion = ref<any>({})
 // Add collaborator dialog state
 const showAddDialog = ref(false)
 
-// Mock RFQ data with localStorage persistence
-const mockRFQData = useLocalStorage('mockRFQData', INITIAL_MOCK_RFQ_DATA)
+// CHANGE THIS: Use the same localStorage key as the list page
+const rfqList = useLocalStorage('rfqList', INITIAL_RFQ_LIST)
 
 // Methods
 const goBack = () => {
@@ -333,36 +331,6 @@ const performSave = async () => {
     hour12: true
   })
   
-  rfqData.value = {
-    ...rfqData.value,
-    no: editFormData.value.no,
-    rfqNo: editFormData.value.rfqNo,
-    referenceNo: editFormData.value.referenceNo,
-    pno: editFormData.value.pno,
-    desc: editFormData.value.desc,
-    quantity: editFormData.value.quantity,
-    aes: editFormData.value.aes,
-    status: editFormData.value.status,
-    date: updatedDate,
-    // Preserve existing fields like collaborators, lastEditedBy, timestamp
-    collaborators: rfqData.value?.collaborators || [],
-    lastEditedBy: {
-      ...(rfqData.value?.lastEditedBy || {
-        name: 'Admin User',
-        initials: 'AD'
-      }),
-      timestamp: updatedDate
-    },
-    timestamp: new Date().getTime()
-  }
-
-  // Update the RFQ in mockRFQData array (which persists to localStorage)
-  const rfqIndex = mockRFQData.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
-  if (rfqIndex !== -1) {
-    // Merge with existing data to preserve all fields
-    mockRFQData.value[rfqIndex] = { ...mockRFQData.value[rfqIndex], ...rfqData.value }
-  }
-
   // Update documents (in real app, this would be handled by API)
   if (editedDocuments.value.length > 0) {
     // Add new documents to the list
@@ -384,6 +352,36 @@ const performSave = async () => {
     documents.value.push(...newDocs)
   }
   
+  rfqData.value = {
+    ...rfqData.value,
+    no: editFormData.value.no,
+    rfqNo: editFormData.value.rfqNo,
+    referenceNo: editFormData.value.referenceNo,
+    pno: editFormData.value.pno,
+    desc: editFormData.value.desc,
+    quantity: editFormData.value.quantity,
+    aes: editFormData.value.aes,
+    status: editFormData.value.status,
+    date: updatedDate,
+    collaborators: collaborators.value,
+    documents: documents.value,
+    lastEditedBy: {
+      ...(rfqData.value?.lastEditedBy || {
+        name: 'Admin User',
+        initials: 'AD'
+      }),
+      timestamp: updatedDate
+    },
+    timestamp: new Date().getTime()
+  }
+
+  // Update the RFQ in rfqList array (same as list page uses)
+  const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
+  if (rfqIndex !== -1) {
+    // Merge with existing data to preserve all fields
+    rfqList.value[rfqIndex] = { ...rfqList.value[rfqIndex], ...rfqData.value }
+  }
+  
   // Show success message
   toast({
     title: 'Success',
@@ -395,6 +393,15 @@ const performSave = async () => {
 }
 
 const sendToOEM = () => {
+  if (rfqData.value) {
+    // Update status in the shared rfqList
+    const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
+    if (rfqIndex !== -1) {
+      rfqList.value[rfqIndex].status = 'Sent to OEM'
+      rfqData.value.status = 'Sent to OEM'
+    }
+  }
+  
   toast({
     title: 'Sending to OEM',
     description: `RFQ ${rfqData.value?.rfqNo} sent to OEM`
@@ -402,6 +409,15 @@ const sendToOEM = () => {
 }
 
 const markAsQuoted = () => {
+  if (rfqData.value) {
+    // Update status in the shared rfqList
+    const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
+    if (rfqIndex !== -1) {
+      rfqList.value[rfqIndex].status = 'Quoted'
+      rfqData.value.status = 'Quoted'
+    }
+  }
+  
   toast({
     title: 'Marked as Quoted',
     description: `RFQ ${rfqData.value?.rfqNo} marked as quoted`
@@ -517,6 +533,13 @@ const handleCollaboratorRemoved = (collaboratorId: string) => {
   if (removed) {
     const updatedCollaborators = collaborators.value.filter(c => c.id !== collaboratorId)
     collaborators.value = updatedCollaborators
+    
+    // Update rfqList
+    const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value?.rfqNo)
+    if (rfqIndex !== -1) {
+      rfqList.value[rfqIndex].collaborators = updatedCollaborators
+    }
+    
     toast({
       title: 'Collaborator Removed',
       description: `${removed.name} has been removed from collaborators`
@@ -541,6 +564,13 @@ const handleAddCollaborator = (user: any) => {
   }
   
   collaborators.value = [...collaborators.value, newCollaborator]
+  
+  // Update rfqList
+  const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value?.rfqNo)
+  if (rfqIndex !== -1) {
+    rfqList.value[rfqIndex].collaborators = collaborators.value
+  }
+  
   handleCollaboratorAdded(newCollaborator)
   showAddDialog.value = false
 }
@@ -560,13 +590,17 @@ const getCollaboratorInitials = (name: string): string => {
 // Load RFQ data based on route parameter
 onMounted(() => {
   const rfqNo = route.params.rfqNo as string
-  const foundRFQ = mockRFQData.value.find(rfq => rfq.rfqNo === rfqNo)
+  const foundRFQ = rfqList.value.find(rfq => rfq.rfqNo === rfqNo)
   
   if (foundRFQ) {
     rfqData.value = foundRFQ
     // Load collaborators from RFQ data if available
     if (foundRFQ.collaborators) {
       collaborators.value = foundRFQ.collaborators
+    }
+    // Load documents from RFQ data if available
+    if (foundRFQ.documents) {
+      documents.value = foundRFQ.documents
     }
   } else {
     // Handle case where RFQ not found

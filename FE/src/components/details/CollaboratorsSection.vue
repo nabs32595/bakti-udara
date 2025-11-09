@@ -78,7 +78,7 @@ import { useLocalStorage } from '@/composables/useLocalStorage'
 import { INITIAL_AVAILABLE_USERS } from '@/data/mockData/rfqDetails'
 import { INITIAL_RFQ_LIST } from '@/data/mockData/requestForQuotation'
 import { INITIAL_QUOTATION_LIST } from '@/data/mockData/quotations'
-import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
+import AddCollaboratorDialog from '@/components/details/AddCollaboratorDialog.vue'
 
 interface Collaborator {
   id: string

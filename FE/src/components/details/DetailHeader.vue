@@ -31,6 +31,16 @@
       </div>
     </div>
     
+    <!-- Collaborators Section -->
+    <div v-if="entityType && entityId" class="mt-3">
+      <CollaboratorsSection
+        :entity-type="entityType"
+        :entity-id="entityId"
+        :is-edit-mode="isEditMode"
+        :initial-collaborators="collaborators || []"
+      />
+    </div>
+    
     <!-- Actions Slot (e.g., Collaborators) -->
     <div v-if="$slots.actions" class="mt-4 pt-4 border-t border-gray-200">
       <slot name="actions"></slot>
@@ -41,6 +51,7 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import CollaboratorsSection from './CollaboratorsSection.vue'
 
 defineProps<{
   title: string
@@ -48,12 +59,13 @@ defineProps<{
   status?: string
   isEditMode?: boolean
   statusBadgeClass?: string
+  collaborators?: any[]
+  entityType?: 'rfq' | 'quotation'
+  entityId?: string
 }>()
 
 defineEmits<{
   'go-back': []
-  'add-collaborator': []
-  'remove-collaborator': [id: string]
 }>()
 </script>
 

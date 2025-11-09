@@ -1,104 +1,148 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <RFQDetailHeader
-      :rfq-data="rfqData"
-      :is-edit-mode="isEditMode"
-      :collaborators="collaborators"
-      :available-users="availableUsers"
-      @go-back="goBack"
-      @add-collaborator="showAddDialog = true"
-      @remove-collaborator="handleCollaboratorRemoved"
-    />
+  <DetailPageLayout 
+    :is-edit-mode="isEditMode" 
+    background-color="bg-gray-50"
+    default-tab="rfq"
+    :rfq-data="rfqData"
+    :quotation-data="relatedQuotations.length > 0 ? relatedQuotations[0] : null"
+  >
+    <!-- Header Slot -->
+    <template #header>
+      <DetailHeader
+        :title="rfqData?.rfqNo || 'Loading...'"
+        subtitle="RFQ Details"
+        :status="rfqData?.status"
+        :status-badge-class="getStatusBadgeClass(rfqData?.status || '')"
+        :is-edit-mode="isEditMode"
+        :collaborators="rfqData?.collaborators || []"
+        entity-type="rfq"
+        :entity-id="rfqData?.rfqNo || ''"
+        @go-back="goBack"
+      />
+    </template>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8" :class="{ 'bg-gray-50': isEditMode }">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main Details -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Basic Information -->
-          <RFQBasicInfo
-            :rfq-data="rfqData"
-            :is-edit-mode="isEditMode"
-            :edit-form-data="editFormData"
-            :edit-errors="editErrors"
-            @update:edit-form-data="handleUpdateEditFormData"
-            @clear-error="clearEditError"
-          />
+    <!-- RFQ Content Tab - 2 Column Layout -->
+    <!-- Left Column (2/3 width) -->
+    <template #rfq-left>
+      <RFQBasicInfo
+        :rfq-data="rfqData"
+        :is-edit-mode="isEditMode"
+        :edit-form-data="editFormData"
+        :edit-errors="editErrors"
+        @update:edit-form-data="handleUpdateEditFormData"
+        @clear-error="clearEditError"
+      />
 
-          <!-- Document Details -->
-          <RFQDocumentDetails
-            :documents="documents"
-            :is-edit-mode="isEditMode"
-            :edited-documents="editedDocuments"
-            @file-upload="handleFileUpload"
-            @remove-document="removeExistingDocument"
-            @remove-new-document="removeNewDocument"
-            @download-document="downloadDocument"
-          />
-        </div>
+      <DocumentSection
+        title="Document Details"
+        description="Attached documents and specifications"
+        :documents="documents"
+        :is-edit-mode="isEditMode"
+        :edited-documents="editedDocuments"
+        @file-upload="handleFileUpload"
+        @remove-document="removeExistingDocument"
+        @remove-new-document="removeNewDocument"
+        @download-document="downloadDocument"
+      />
+    </template>
 
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <!-- Status and Timeline -->
-          <RFQStatusTimeline
-            :rfq-data="rfqData"
-            :is-edit-mode="isEditMode"
-            :edit-form-data="editFormData"
-            :edit-errors="editErrors"
-            @update:status="handleStatusUpdate"
-            @clear-error="clearEditError"
-          />
+    <!-- Right Column (1/3 width) -->
+    <template #rfq-right>
+      <RFQActions
+        :is-edit-mode="isEditMode"
+        :is-submitting="isSubmitting"
+        @edit="editRFQ"
+        @save="saveChanges"
+        @cancel="cancelEdit"
+        @send-to-oem="sendToOEM"
+        @mark-as-quoted="markAsQuoted"
+        @delete="deleteRFQ"
+      />
 
-          <!-- Actions -->
-          <RFQActions
-            :is-edit-mode="isEditMode"
-            :is-submitting="isSubmitting"
-            @edit="editRFQ"
-            @save="saveChanges"
-            @cancel="cancelEdit"
-            @send-to-oem="sendToOEM"
-            @mark-as-quoted="markAsQuoted"
-            @delete="deleteRFQ"
-          />
-        </div>
-      </div>
-    </div>
+      <StatusTimeline
+        title="Status & Timeline"
+        :status-timeline="rfqData?.statusTimeline || []"
+        :timeline-statuses="['Created', 'Under Review', 'Sent to OEM', 'Quoted']"
+        :current-status="rfqData?.status"
+        :is-edit-mode="isEditMode"
+        :status-options="['Under Review', 'Sent to OEM', 'Quoted']"
+        @update:status="handleStatusUpdate"
+      >
+        <template #footer>
+          <div class="flex items-center space-x-3">
+            <Avatar>
+              <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                {{ rfqData?.lastEditedBy?.initials || 'AD' }}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Last Edited By</p>
+              <p class="text-xs text-gray-500">{{ rfqData?.lastEditedBy?.name || 'Admin User' }}</p>
+              <p class="text-xs text-gray-400">{{ rfqData?.lastEditedBy?.timestamp || rfqData?.date }}</p>
+            </div>
+          </div>
+        </template>
+      </StatusTimeline>
+    </template>
 
-    <!-- Conflict Resolution Dialog -->
-    <ConflictResolutionDialog
-      :open="showConflictDialog"
-      :conflict-data="conflictData"
-      @update:open="showConflictDialog = $event"
-      @discard-changes="handleDiscardChanges"
-      @resolve-conflicts="handleResolveConflicts"
-    />
+    <!-- Quotation Content Tab -->
+    <template #quotation-content>
+      <template v-if="relatedQuotations.length > 0">
+        <QuotationBasicInfo
+          v-for="quotation in relatedQuotations"
+          :key="quotation.quotationNo"
+          :quotation-data="quotation"
+          :is-edit-mode="false"
+        />
+      </template>
+      <Card v-else>
+        <CardContent class="py-8 text-center">
+          <p class="text-gray-500">No quotations found for this RFQ</p>
+        </CardContent>
+      </Card>
+    </template>
 
-    <!-- Add Collaborator Dialog -->
-    <AddCollaboratorDialog
-      :open="showAddDialog"
-      :existing-collaborators="collaborators"
-      :available-users="availableUsers"
-      @update:open="showAddDialog = $event"
-      @add-collaborator="handleAddCollaborator"
-    />
-  </div>
+
+    <!-- Dialogs Slot -->
+    <template #dialogs>
+      <!-- Conflict Resolution Dialog -->
+      <ConflictResolutionDialog
+        :open="showConflictDialog"
+        :conflict-data="conflictData"
+        @update:open="showConflictDialog = $event"
+        @discard-changes="handleDiscardChanges"
+        @resolve-conflicts="handleResolveConflicts"
+      />
+
+    </template>
+  </DetailPageLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import RFQDetailHeader from './RFQDetailHeader.vue'
-import RFQBasicInfo from './RFQBasicInfo.vue'
-import RFQDocumentDetails from './RFQDocumentDetails.vue'
-import RFQStatusTimeline from './RFQStatusTimeline.vue'
-import RFQActions from './RFQActions.vue'
-import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
-import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useLocalStorage } from '@/composables/useLocalStorage'
-import {  INITIAL_AVAILABLE_USERS } from '@/data/mockData/rfqDetails'
 import { INITIAL_RFQ_LIST } from '@/data/mockData/requestForQuotation'
+import { INITIAL_QUOTATION_LIST } from '@/data/mockData/quotations'
+
+// Generic Components
+import DetailPageLayout from '@/components/details/DetailPageLayout.vue'
+import DetailHeader from '@/components/details/DetailHeader.vue'
+import DocumentSection from '@/components/details/DocumentSection.vue'
+import StatusTimeline from '@/components/details/StatusTimeline.vue'
+import { Card, CardContent } from '@/components/ui/card'
+
+// RFQ-Specific Components
+import RFQBasicInfo from '@/components/modules/rfq/RFQBasicInfo.vue'
+import RFQActions from '@/components/modules/rfq/RFQActions.vue'
+
+// Quotation Components
+import QuotationBasicInfo from '@/components/modules/quotation/QuotationBasicInfo.vue'
+
+// Dialogs
+import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
 
 // Router
 const route = useRoute()
@@ -109,12 +153,6 @@ const { toast } = useToast()
 
 // Data
 const rfqData = ref<any>(null)
-
-// Collaborators state (from rfqData)
-const collaborators = ref<any[]>([])
-
-// Available users with localStorage persistence
-const availableUsers = useLocalStorage('availableUsers', INITIAL_AVAILABLE_USERS)
 
 // Documents state (from rfqData)
 const documents = ref<any[]>([])
@@ -141,11 +179,23 @@ const showConflictDialog = ref(false)
 const conflictData = ref<any[]>([])
 const currentDbVersion = ref<any>({})
 
-// Add collaborator dialog state
-const showAddDialog = ref(false)
 
-// CHANGE THIS: Use the same localStorage key as the list page
+// Use the same localStorage key as the list page
 const rfqList = useLocalStorage('rfqList', INITIAL_RFQ_LIST)
+const quotationList = useLocalStorage('quotationList', INITIAL_QUOTATION_LIST)
+
+// Related quotations state
+const relatedQuotations = ref<any[]>([])
+
+// Helper function for status badge class
+const getStatusBadgeClass = (status: string) => {
+  const classes = {
+    'Under Review': 'bg-gray-200 text-gray-800',
+    'Sent to OEM': 'bg-gray-300 text-gray-800',
+    'Quoted': 'bg-gray-400 text-gray-900'
+  }
+  return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+}
 
 // Methods
 const goBack = () => {
@@ -395,7 +445,7 @@ const performSave = async () => {
     aes: editFormData.value.aes,
     status: editFormData.value.status,
     date: updatedDate,
-    collaborators: collaborators.value,
+    collaborators: rfqData.value?.collaborators || [],
     documents: documents.value,
     lastEditedBy: {
       ...(rfqData.value?.lastEditedBy || {
@@ -560,72 +610,6 @@ const getFileTypeFromMime = (mimeType: string) => {
   return 'FILE'
 }
 
-// Collaborator handlers
-const handleCollaboratorAdded = (collaborator: any) => {
-  toast({
-    title: 'Collaborator Added',
-    description: `${collaborator.name} has been added as a collaborator`
-  })
-}
-
-const handleCollaboratorRemoved = (collaboratorId: string) => {
-  const removed = collaborators.value.find(c => c.id === collaboratorId)
-  if (removed) {
-    const updatedCollaborators = collaborators.value.filter(c => c.id !== collaboratorId)
-    collaborators.value = updatedCollaborators
-    
-    // Update rfqList
-    const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value?.rfqNo)
-    if (rfqIndex !== -1) {
-      rfqList.value[rfqIndex].collaborators = updatedCollaborators
-    }
-    
-    toast({
-      title: 'Collaborator Removed',
-      description: `${removed.name} has been removed from collaborators`
-    })
-  }
-}
-
-const handleAddCollaborator = (user: any) => {
-  const newCollaborator = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    initials: getCollaboratorInitials(user.name),
-    addedAt: new Date().toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    })
-  }
-  
-  collaborators.value = [...collaborators.value, newCollaborator]
-  
-  // Update rfqList
-  const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value?.rfqNo)
-  if (rfqIndex !== -1) {
-    rfqList.value[rfqIndex].collaborators = collaborators.value
-  }
-  
-  handleCollaboratorAdded(newCollaborator)
-  showAddDialog.value = false
-}
-
-const getCollaboratorInitials = (name: string): string => {
-  const parts = name.split(' ')
-  if (parts.length >= 2) {
-    const first = parts[0]?.[0] || ''
-    const second = parts[1]?.[0] || ''
-    if (first && second) {
-      return (first + second).toUpperCase()
-    }
-  }
-  return name.substring(0, 2).toUpperCase()
-}
 
 // Load RFQ data based on route parameter
 onMounted(() => {
@@ -634,14 +618,15 @@ onMounted(() => {
   
   if (foundRFQ) {
     rfqData.value = foundRFQ
-    // Load collaborators from RFQ data if available
-    if (foundRFQ.collaborators) {
-      collaborators.value = foundRFQ.collaborators
-    }
     // Load documents from RFQ data if available
     if (foundRFQ.documents) {
       documents.value = foundRFQ.documents
     }
+    
+    // Load related quotations
+    relatedQuotations.value = quotationList.value.filter(
+      quotation => quotation.rfqNo === rfqNo
+    )
   } else {
     // Handle case where RFQ not found
     console.error('RFQ not found:', rfqNo)
@@ -649,4 +634,3 @@ onMounted(() => {
   }
 })
 </script>
-

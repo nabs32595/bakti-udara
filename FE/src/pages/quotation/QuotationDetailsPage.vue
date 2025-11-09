@@ -1,5 +1,11 @@
 <template>
-  <DetailPageLayout :is-edit-mode="isEditMode" background-color="bg-gray-50">
+  <DetailPageLayout 
+    :is-edit-mode="isEditMode" 
+    background-color="bg-gray-50"
+    default-tab="quotation"
+    :rfq-data="sourceRFQ"
+    :quotation-data="quotationData"
+  >
     <!-- Header Slot -->
     <template #header>
       <DetailHeader
@@ -8,29 +14,43 @@
         :status="quotationData?.validityStatus"
         :status-badge-class="getValidityStatusBadgeClass(quotationData?.validityStatus)"
         :is-edit-mode="isEditMode"
+        :collaborators="quotationData?.collaborators || []"
+        entity-type="quotation"
+        :entity-id="quotationData?.quotationNo || ''"
         @go-back="goBack"
       />
     </template>
 
-    <!-- Basic Info Slot -->
-    <template #basic-info>
+    <!-- RFQ Content Tab -->
+    <template #rfq-content>
+      <RFQBasicInfo
+        v-if="sourceRFQ"
+        :rfq-data="sourceRFQ"
+        :is-edit-mode="false"
+        :edit-form-data="{}"
+        :edit-errors="{}"
+      />
+      <Card v-else>
+        <CardContent class="py-8 text-center">
+          <p class="text-gray-500">No source RFQ found for this quotation</p>
+        </CardContent>
+      </Card>
+    </template>
+
+    <!-- Quotation Content Tab - 2 Column Layout -->
+    <!-- Left Column (2/3 width) -->
+    <template #quotation-left>
       <QuotationBasicInfo
         :quotation-data="quotationData"
         :is-edit-mode="isEditMode"
       />
-    </template>
 
-    <!-- Custom Sections Slot - Line Items -->
-    <template #custom-sections>
       <QuotationLineItems
         :line-items="quotationData?.lineItems || []"
         :currency="quotationData?.currency"
         :is-edit-mode="isEditMode"
       />
-    </template>
 
-    <!-- Documents Slot -->
-    <template #documents>
       <DocumentSection
         title="Supporting Documents"
         description="Technical specifications and related documents"
@@ -44,8 +64,21 @@
       />
     </template>
 
-    <!-- Status Timeline Slot -->
-    <template #status-timeline>
+    <!-- Right Column (1/3 width) -->
+    <template #quotation-right>
+      <QuotationActions
+        :is-edit-mode="isEditMode"
+        :is-submitting="isSubmitting"
+        @edit="editQuotation"
+        @save="saveChanges"
+        @cancel="cancelEdit"
+        @send-to-customer="sendToCustomer"
+        @mark-as-accepted="markAsAccepted"
+        @mark-as-rejected="markAsRejected"
+        @export-pdf="exportPDF"
+        @delete="deleteQuotation"
+      />
+
       <StatusTimeline
         title="Status & Timeline"
         :status-timeline="quotationData?.statusTimeline || []"
@@ -71,28 +104,8 @@
       </StatusTimeline>
     </template>
 
-    <!-- Related Items Slot - Show RFQ Link -->
-    <template #related-items>
-      <LinkedRFQSection
-        :rfq-no="quotationData?.rfqNo || ''"
-        :rfq-status="linkedRFQStatus"
-      />
-    </template>
-
-    <!-- Actions Slot -->
-    <template #actions>
-      <QuotationActions
-        :is-edit-mode="isEditMode"
-        :is-submitting="isSubmitting"
-        @edit="editQuotation"
-        @save="saveChanges"
-        @cancel="cancelEdit"
-        @send-to-customer="sendToCustomer"
-        @mark-as-accepted="markAsAccepted"
-        @mark-as-rejected="markAsRejected"
-        @export-pdf="exportPDF"
-        @delete="deleteQuotation"
-      />
+    <!-- Dialogs Slot -->
+    <template #dialogs>
     </template>
   </DetailPageLayout>
 </template>
@@ -111,12 +124,15 @@ import DetailPageLayout from '@/components/details/DetailPageLayout.vue'
 import DetailHeader from '@/components/details/DetailHeader.vue'
 import DocumentSection from '@/components/details/DocumentSection.vue'
 import StatusTimeline from '@/components/details/StatusTimeline.vue'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Quotation-Specific Components
 import QuotationBasicInfo from '@/components/modules/quotation/QuotationBasicInfo.vue'
 import QuotationLineItems from '@/components/modules/quotation/QuotationLineItems.vue'
 import QuotationActions from '@/components/modules/quotation/QuotationActions.vue'
-import LinkedRFQSection from '@/components/modules/quotation/LinkedRFQSection.vue'
+
+// RFQ Components
+import RFQBasicInfo from '@/components/modules/rfq/RFQBasicInfo.vue'
 
 // Router
 const route = useRoute()
@@ -127,7 +143,7 @@ const { toast } = useToast()
 
 // Data
 const quotationData = ref<any>(null)
-const linkedRFQStatus = ref<string>('')
+const sourceRFQ = ref<any>(null)
 
 // Documents state
 const documents = ref<any[]>([])
@@ -230,6 +246,7 @@ const handleStatusUpdate = (status: string) => {
   console.log('Status updated:', status)
 }
 
+
 // Document management
 const handleFileUpload = (files: File[]) => {
   editedDocuments.value.push(...files)
@@ -264,15 +281,17 @@ const getValidityStatusBadgeClass = (status: string) => {
 // Load quotation data
 onMounted(() => {
   const quotationNo = route.params.quotationNo as string
-  const foundQuotation = quotationList.value.find(q => q.quotationNo === quotationNo)
+  const foundQuotation = quotationList.value.find((q: any) => q.quotationNo === quotationNo)
   
   if (foundQuotation) {
     quotationData.value = foundQuotation
     
-    // Load linked RFQ status
-    const linkedRFQ = rfqList.value.find(rfq => rfq.rfqNo === foundQuotation.rfqNo)
-    if (linkedRFQ) {
-      linkedRFQStatus.value = linkedRFQ.status
+    // Load source RFQ
+    if (foundQuotation.rfqNo) {
+      const linkedRFQ = rfqList.value.find((rfq: any) => rfq.rfqNo === foundQuotation.rfqNo)
+      if (linkedRFQ) {
+        sourceRFQ.value = linkedRFQ
+      }
     }
     
     // Load documents if available

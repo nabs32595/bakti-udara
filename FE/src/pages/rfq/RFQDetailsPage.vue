@@ -97,9 +97,7 @@ import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
 import AddCollaboratorDialog from '@/components/AddCollaboratorDialog.vue'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useLocalStorage } from '@/composables/useLocalStorage'
-import { 
-  INITIAL_AVAILABLE_USERS
-} from '@/data/mockData/rfqDetails'
+import {  INITIAL_AVAILABLE_USERS } from '@/data/mockData/rfqDetails'
 import { INITIAL_RFQ_LIST } from '@/data/mockData/requestForQuotation'
 
 // Router
@@ -254,6 +252,35 @@ const handleStatusUpdate = (value: string) => {
   clearEditError('status')
 }
 
+const updateStatusTimeline = (newStatus: string) => {
+  // Initialize statusTimeline if it doesn't exist
+  if (!rfqData.value.statusTimeline) {
+    rfqData.value.statusTimeline = []
+  }
+  
+  // Check if this status is already in the timeline
+  const existingStatusIndex = rfqData.value.statusTimeline.findIndex(
+    (item: any) => item.status === newStatus
+  )
+  
+  // If status doesn't exist in timeline, add it
+  if (existingStatusIndex === -1) {
+    const timestamp = new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })
+    
+    rfqData.value.statusTimeline.push({
+      status: newStatus,
+      timestamp: timestamp
+    })
+  }
+}
+
 const saveChanges = async () => {
   if (!validateEditForm()) {
     return
@@ -331,6 +358,11 @@ const performSave = async () => {
     hour12: true
   })
   
+  // Update status timeline if status has changed
+  if (editFormData.value.status !== rfqData.value.status) {
+    updateStatusTimeline(editFormData.value.status)
+  }
+  
   // Update documents (in real app, this would be handled by API)
   if (editedDocuments.value.length > 0) {
     // Add new documents to the list
@@ -394,10 +426,14 @@ const performSave = async () => {
 
 const sendToOEM = () => {
   if (rfqData.value) {
+    // Update status timeline
+    updateStatusTimeline('Sent to OEM')
+    
     // Update status in the shared rfqList
     const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
     if (rfqIndex !== -1) {
       rfqList.value[rfqIndex].status = 'Sent to OEM'
+      rfqList.value[rfqIndex].statusTimeline = rfqData.value.statusTimeline
       rfqData.value.status = 'Sent to OEM'
     }
   }
@@ -410,10 +446,14 @@ const sendToOEM = () => {
 
 const markAsQuoted = () => {
   if (rfqData.value) {
+    // Update status timeline
+    updateStatusTimeline('Quoted')
+    
     // Update status in the shared rfqList
     const rfqIndex = rfqList.value.findIndex(rfq => rfq.rfqNo === rfqData.value.rfqNo)
     if (rfqIndex !== -1) {
       rfqList.value[rfqIndex].status = 'Quoted'
+      rfqList.value[rfqIndex].statusTimeline = rfqData.value.statusTimeline
       rfqData.value.status = 'Quoted'
     }
   }

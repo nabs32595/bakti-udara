@@ -375,7 +375,7 @@ const bulkDelete = () => {
 
 // Methods: Individual actions
 const viewRFQDetails = (rfqNo: string) => {
-  router.push(`/request-for-quotation/${rfqNo}`)
+  router.push(`/rfq/${rfqNo}/q`)
 }
 
 // const viewDetails = (rfqNo: string) => {

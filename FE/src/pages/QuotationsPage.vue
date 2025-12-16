@@ -350,11 +350,14 @@ const bulkDelete = () => {
 
 // Methods: Individual actions
 const viewQuotationDetails = (quotationNo: string) => {
-  router.push(`/quotations/${quotationNo}`)
+  const quotation = quotationList.value.find(q => q.quotationNo === quotationNo)
+  if (quotation?.rfqNo) {
+    router.push(`/rfq/${quotation.rfqNo}/q/${quotationNo}`)
+  }
 }
 
 const viewRFQDetails = (rfqNo: string) => {
-  router.push(`/request-for-quotation/${rfqNo}`)
+  router.push(`/rfq/${rfqNo}/q`)
 }
 
 // Methods: Pagination

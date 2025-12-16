@@ -72,7 +72,7 @@ const router = useRouter()
 
 const navigateToRFQ = () => {
   if (props.quotationData?.rfqNo) {
-    router.push(`/request-for-quotation/${props.quotationData.rfqNo}`)
+    router.push(`/rfq/${props.quotationData.rfqNo}/q`)
   }
 }
 

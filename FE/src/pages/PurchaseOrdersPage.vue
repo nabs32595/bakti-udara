@@ -146,7 +146,7 @@
                 <td class="px-3 py-2 text-xs font-medium text-gray-900">
                   <button
                     @click="viewQuotationDetails(item.quotationNo)"
-                    class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    class="text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
                   >
                     {{ item.quotationNo }}
                   </button>

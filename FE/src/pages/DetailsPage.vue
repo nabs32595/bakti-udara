@@ -153,77 +153,75 @@
 
     <!-- PO details: /purchase-orders/:poReference -->
     <template v-else-if="isPO">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-6">
-          <POBasicInfo
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <POBasicInfo
+                v-if="poLineItems.length > 0"
+                :po-reference="poReference"
+                :first-line="poLineItems[0]"
+                :all-lines="poLineItems"
+                :is-edit-mode="isEditMode"
+                @navigate-quotation="viewQuotationDetails"
+                @navigate-rfq="viewRFQDetails"
+            />
+            <Card v-else>
+              <CardContent class="py-8 text-center">
+                <p class="text-sm text-gray-500">Purchase order not found</p>
+                <Button variant="outline" class="mt-4" @click="goBack">Back to Purchase Orders</Button>
+              </CardContent>
+            </Card>
+            <DocumentSection
+                v-if="poLineItems.length > 0"
+                title="PO Documents"
+                description="Attached documents for this purchase order"
+                :documents="poDocuments"
+                :is-edit-mode="isEditMode"
+                :edited-documents="poEditedDocuments"
+                @file-upload="handlePOFileUpload"
+                @remove-document="removePODocument"
+                @remove-new-document="removeNewPODocument"
+                @download-document="downloadPODocument"
+            />
+          </div>
+          <div class="space-y-6">
+            <POActions
               v-if="poLineItems.length > 0"
-              :po-reference="poReference"
-              :first-line="poLineItems[0]"
-              :all-lines="poLineItems"
               :is-edit-mode="isEditMode"
-              @navigate-quotation="viewQuotationDetails"
-              @navigate-rfq="viewRFQDetails"
-          />
-          <Card v-else>
-            <CardContent class="py-8 text-center">
-              <p class="text-sm text-gray-500">Purchase order not found</p>
-              <Button variant="outline" class="mt-4" @click="goBack">Back to Purchase Orders</Button>
-            </CardContent>
-          </Card>
-          <DocumentSection
-              v-if="poLineItems.length > 0"
-              title="PO Documents"
-              description="Attached documents for this purchase order"
-              :documents="poDocuments"
-              :is-edit-mode="isEditMode"
-              :edited-documents="poEditedDocuments"
-              @file-upload="handlePOFileUpload"
-              @remove-document="removePODocument"
-              @remove-new-document="removeNewPODocument"
-              @download-document="downloadPODocument"
-          />
-          <POLineItemsTable
-              v-if="poLineItems.length > 0"
-              :line-items="poLineItems"
-          />
-        </div>
-        <div class="space-y-6">
-          <Card v-if="poLineItems.length > 0">
-            <CardHeader>
-              <CardTitle class="text-base">Actions</CardTitle>
-            </CardHeader>
-            <CardContent class="space-y-2">
-              <Button v-if="!isEditMode" variant="outline" class="w-full" @click="editPO">Edit</Button>
-              <template v-else>
-                <Button class="w-full" :disabled="isSubmitting" @click="savePOChanges">Save</Button>
-                <Button variant="outline" class="w-full" @click="cancelPOEdit">Cancel</Button>
-              </template>
-            </CardContent>
-          </Card>
-          <StatusTimeline
-              v-if="poLineItems.length > 0 && firstLine"
-              title="Status & Timeline"
-              :status-timeline="poStatusTimeline"
-              :timeline-statuses="['Created', 'On Time', 'Revise EDD']"
-              :current-status="firstLine.deliveryStatus"
-              :is-edit-mode="isEditMode"
-          >
-            <template #footer>
-              <div class="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium size-6">
-                    {{ firstLine?.lastEditedBy?.initials || 'AD' }}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p class="text-xs font-medium text-gray-900">Last Edited By</p>
-                  <p class="text-[11px] text-gray-500">{{ firstLine?.lastEditedBy?.name || 'Admin User' }}</p>
-                  <p class="text-[11px] text-gray-400">{{ firstLine?.lastEditedBy?.timestamp || firstLine?.poDate }}</p>
+              :is-submitting="isSubmitting"
+              @edit="editPO"
+              @save="savePOChanges"
+              @cancel="cancelPOEdit"
+            />
+            <StatusTimeline
+                v-if="poLineItems.length > 0 && firstLine"
+                title="Status & Timeline"
+                :status-timeline="poStatusTimeline"
+                :timeline-statuses="['Created', 'On Time', 'Revise EDD']"
+                :current-status="firstLine.deliveryStatus"
+                :is-edit-mode="isEditMode"
+            >
+              <template #footer>
+                <div class="flex items-center space-x-3">
+                  <Avatar>
+                    <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium size-6">
+                      {{ firstLine?.lastEditedBy?.initials || 'AD' }}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p class="text-xs font-medium text-gray-900">Last Edited By</p>
+                    <p class="text-[11px] text-gray-500">{{ firstLine?.lastEditedBy?.name || 'Admin User' }}</p>
+                    <p class="text-[11px] text-gray-400">{{ firstLine?.lastEditedBy?.timestamp || firstLine?.poDate }}</p>
+                  </div>
                 </div>
-              </div>
-            </template>
-          </StatusTimeline>
+              </template>
+            </StatusTimeline>
+          </div>
         </div>
+        <POLineItemsTable
+            v-if="poLineItems.length > 0"
+            :line-items="poLineItems"
+        />
       </div>
     </template>
 
@@ -270,6 +268,7 @@ import QuotationActions from '@/components/modules/quotation/QuotationActions.vu
 // PO Components
 import POBasicInfo from '@/components/modules/po/POBasicInfo.vue'
 import POLineItemsTable from '@/components/modules/po/POLineItemsTable.vue'
+import POActions from '@/components/modules/po/POActions.vue'
 
 // Dialogs
 import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'

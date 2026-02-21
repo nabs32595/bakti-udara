@@ -5,7 +5,7 @@
         <Button 
           variant="outline" 
           size="sm" 
-          @click="$emit('go-back')"
+          @click="goBack"
           class="flex items-center space-x-2"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,9 +49,16 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import CollaboratorsSection from './CollaboratorsSection.vue'
+
+const router = useRouter()
+
+function goBack() {
+  router.back()
+}
 
 defineProps<{
   title: string
@@ -62,10 +69,6 @@ defineProps<{
   collaborators?: any[]
   entityType?: 'rfq' | 'quotation'
   entityId?: string
-}>()
-
-defineEmits<{
-  'go-back': []
 }>()
 </script>
 

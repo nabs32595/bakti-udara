@@ -2,7 +2,7 @@
   <DetailPageLayout
     :is-edit-mode="isEditMode"
     background-color="bg-gray-50"
-    :entity-type="quotationData ? 'quotation' : 'rfq'"
+    :entity-type="isQuotation ? 'quotation' : 'rfq'"
   >
     <template #header>
       <DetailHeader
@@ -11,15 +11,14 @@
         :status="headerStatus"
         :status-badge-class="headerStatusBadgeClass"
         :is-edit-mode="isEditMode"
-        :collaborators="quotationData ? (quotationData.collaborators || []) : (sourceRFQ?.collaborators || [])"
-        :entity-type="quotationData ? 'quotation' : 'rfq'"
-        :entity-id="quotationData?.quotationNo || sourceRFQ?.rfqNo || ''"
-        @go-back="goBack"
+        :collaborators="isPO ? [] : (isQuotation ? (quotationData?.collaborators || []) : (sourceRFQ?.collaborators || []))"
+        :entity-type="isPO ? undefined : (isQuotation ? 'quotation' : 'rfq')"
+        :entity-id="isPO ? '' : (isQuotation ? quotationData?.quotationNo : sourceRFQ?.rfqNo) || ''"
       />
     </template>
 
     <!-- RFQ details: /rfq/:rfqNo -->
-    <template v-if="!quotationData">
+    <template v-if="isRFQ">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
           <RFQBasicInfo
@@ -88,7 +87,7 @@
     </template>
 
     <!-- Quotation details: /quotations/:quotationNo -->
-    <template v-else>
+    <template v-else-if="isQuotation">
       <div class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
@@ -152,9 +151,85 @@
       </div>
     </template>
 
+    <!-- PO details: /purchase-orders/:poReference -->
+    <template v-else-if="isPO">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <POBasicInfo
+              v-if="poLineItems.length > 0"
+              :po-reference="poReference"
+              :first-line="poLineItems[0]"
+              :all-lines="poLineItems"
+              :is-edit-mode="isEditMode"
+              @navigate-quotation="viewQuotationDetails"
+              @navigate-rfq="viewRFQDetails"
+          />
+          <Card v-else>
+            <CardContent class="py-8 text-center">
+              <p class="text-sm text-gray-500">Purchase order not found</p>
+              <Button variant="outline" class="mt-4" @click="goBack">Back to Purchase Orders</Button>
+            </CardContent>
+          </Card>
+          <DocumentSection
+              v-if="poLineItems.length > 0"
+              title="PO Documents"
+              description="Attached documents for this purchase order"
+              :documents="poDocuments"
+              :is-edit-mode="isEditMode"
+              :edited-documents="poEditedDocuments"
+              @file-upload="handlePOFileUpload"
+              @remove-document="removePODocument"
+              @remove-new-document="removeNewPODocument"
+              @download-document="downloadPODocument"
+          />
+          <POLineItemsTable
+              v-if="poLineItems.length > 0"
+              :line-items="poLineItems"
+          />
+        </div>
+        <div class="space-y-6">
+          <Card v-if="poLineItems.length > 0">
+            <CardHeader>
+              <CardTitle class="text-base">Actions</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <Button v-if="!isEditMode" variant="outline" class="w-full" @click="editPO">Edit</Button>
+              <template v-else>
+                <Button class="w-full" :disabled="isSubmitting" @click="savePOChanges">Save</Button>
+                <Button variant="outline" class="w-full" @click="cancelPOEdit">Cancel</Button>
+              </template>
+            </CardContent>
+          </Card>
+          <StatusTimeline
+              v-if="poLineItems.length > 0 && firstLine"
+              title="Status & Timeline"
+              :status-timeline="poStatusTimeline"
+              :timeline-statuses="['Created', 'On Time', 'Revise EDD']"
+              :current-status="firstLine.deliveryStatus"
+              :is-edit-mode="isEditMode"
+          >
+            <template #footer>
+              <div class="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium size-6">
+                    {{ firstLine?.lastEditedBy?.initials || 'AD' }}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p class="text-xs font-medium text-gray-900">Last Edited By</p>
+                  <p class="text-[11px] text-gray-500">{{ firstLine?.lastEditedBy?.name || 'Admin User' }}</p>
+                  <p class="text-[11px] text-gray-400">{{ firstLine?.lastEditedBy?.timestamp || firstLine?.poDate }}</p>
+                </div>
+              </div>
+            </template>
+          </StatusTimeline>
+        </div>
+      </div>
+    </template>
+
     <template #dialogs>
       <ConflictResolutionDialog
-        v-if="!quotationData"
+        v-if="isRFQ"
         :open="showConflictDialog"
         :conflict-data="conflictData"
         @update:open="showConflictDialog = $event"
@@ -173,6 +248,7 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { INITIAL_QUOTATION_LIST } from '@/data/mockData/quotations'
 import { INITIAL_RFQ_LIST } from '@/data/mockData/requestForQuotation'
+import { INITIAL_PO_LIST } from '@/data/mockData/purchaseOrders'
 
 // Generic Components
 import DetailPageLayout from '@/components/details/DetailPageLayout.vue'
@@ -180,6 +256,7 @@ import DetailHeader from '@/components/details/DetailHeader.vue'
 import DocumentSection from '@/components/details/DocumentSection.vue'
 import StatusTimeline from '@/components/details/StatusTimeline.vue'
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 // RFQ Components
 import RFQBasicInfo from '@/components/modules/rfq/RFQBasicInfo.vue'
@@ -189,6 +266,10 @@ import RFQActions from '@/components/modules/rfq/RFQActions.vue'
 import QuotationBasicInfo from '@/components/modules/quotation/QuotationBasicInfo.vue'
 import QuotationLineItems from '@/components/modules/quotation/QuotationLineItems.vue'
 import QuotationActions from '@/components/modules/quotation/QuotationActions.vue'
+
+// PO Components
+import POBasicInfo from '@/components/modules/po/POBasicInfo.vue'
+import POLineItemsTable from '@/components/modules/po/POLineItemsTable.vue'
 
 // Dialogs
 import ConflictResolutionDialog from '@/components/ConflictResolutionDialog.vue'
@@ -237,31 +318,56 @@ const conflictData = ref<any[]>([])
 // Use localStorage
 const quotationList = useLocalStorage('quotationList', INITIAL_QUOTATION_LIST)
 const rfqList = useLocalStorage('rfqList', INITIAL_RFQ_LIST)
+const poList = useLocalStorage('poList', INITIAL_PO_LIST)
+
+// PO state (for /purchase-orders/:poReference)
+const poLineItems = ref<any[]>([])
+const poDocuments = ref<any[]>([])
+const poEditedDocuments = ref<any[]>([])
+const poReference = computed(() => {
+  const ref = route.params.poReference as string
+  return ref ? decodeURIComponent(ref) : ''
+})
+const isPO = computed(() => !!route.params.poReference)
+const isQuotation = computed(() => !!route.params.quotationNo)
+const isRFQ = computed(() => !!route.params.rfqNo)
+const firstLine = computed(() => poLineItems.value[0] ?? null)
+const poStatusTimeline = computed(() => {
+  const line = firstLine.value
+  if (!line) return []
+  return [
+    { status: 'Created', timestamp: line.poDate },
+    { status: line.deliveryStatus === 'ON TIME' ? 'On Time' : 'Revise EDD', timestamp: line.expectedDeliveryDate }
+  ]
+})
 
 // Computed properties
 const headerTitle = computed(() => {
-  if (quotationData.value) {
-    return quotationData.value.quotationNo || 'Loading...'
-  }
-  return sourceRFQ.value?.rfqNo || 'Loading...'
+  if (isPO.value) return poReference.value || 'Purchase Order'
+  if (isQuotation.value) return quotationData.value?.quotationNo || 'Loading...'
+  if (isRFQ.value) return sourceRFQ.value?.rfqNo || 'Loading...'
+  return 'Loading...'
 })
 
 const headerSubtitle = computed(() => {
-  return quotationData.value ? 'Quotation Details' : 'RFQ Details'
+  if (isPO.value) return 'Purchase Order Details'
+  if (isQuotation.value) return 'Quotation Details'
+  if (isRFQ.value) return 'RFQ Details'
+  return ''
 })
 
 const headerStatus = computed(() => {
-  if (quotationData.value) {
-    return quotationData.value.validityStatus
-  }
-  return sourceRFQ.value?.status
+  if (isPO.value) return firstLine.value?.deliveryStatus ?? ''
+  if (isQuotation.value) return quotationData.value?.validityStatus ?? ''
+  if (isRFQ.value) return sourceRFQ.value?.status ?? ''
+  return ''
 })
 
 const headerStatusBadgeClass = computed(() => {
-  if (quotationData.value) {
-    return getValidityStatusBadgeClass(quotationData.value.validityStatus)
-  }
-  return getStatusBadgeClass(sourceRFQ.value?.status || '')
+  if (isPO.value) return getDeliveryStatusBadgeClass(firstLine.value?.deliveryStatus ?? '')
+  if (isQuotation.value) return getValidityStatusBadgeClass(quotationData.value?.validityStatus ?? '')
+  if (isRFQ.value) return getStatusBadgeClass(sourceRFQ.value?.status || '')
+  return 'bg-gray-100 text-gray-800'
 })
 
 // Helper functions
@@ -284,13 +390,82 @@ const getValidityStatusBadgeClass = (status: string) => {
   return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
 }
 
+const getDeliveryStatusBadgeClass = (status: string) => {
+  const classes: Record<string, string> = {
+    'ON TIME': 'bg-emerald-100 text-emerald-800',
+    'REVISE EDD': 'bg-amber-100 text-amber-800'
+  }
+  return classes[status] || 'bg-slate-100 text-slate-700'
+}
+
 // Navigation
 const goBack = () => {
-  if (quotationData.value) {
-    router.push('/quotations')
-  } else {
-    router.push('/request-for-quotation')
+  if (isPO.value) router.push('/purchase-orders')
+  else if (isQuotation.value) router.push('/quotations')
+  else if (isRFQ.value) router.push('/request-for-quotation')
+}
+
+const viewQuotationDetails = (quotationNo: string) => {
+  router.push(`/quotations/${quotationNo}`)
+}
+const viewRFQDetails = (rfqNo: string) => {
+  router.push(`/rfq/${rfqNo}`)
+}
+
+// PO edit & document handlers
+const editPO = () => {
+  isEditMode.value = true
+}
+
+const cancelPOEdit = () => {
+  if (poEditedDocuments.value.length > 0 && !confirm('You have unsaved document changes. Cancel anyway?')) return
+  isEditMode.value = false
+  poEditedDocuments.value = []
+  const ref = poReference.value
+  const first = poList.value.find((item: any) => item.poReference === ref)
+  poDocuments.value = first?.documents ? [...first.documents] : []
+}
+
+const hasPOEditChanges = () => poEditedDocuments.value.length > 0
+
+const savePOChanges = () => {
+  const updatedDate = new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
+  if (poEditedDocuments.value.length > 0) {
+    const newDocs = poEditedDocuments.value.map((file: File, index: number) => ({
+      id: poDocuments.value.length + index + 1,
+      name: file.name,
+      type: getFileTypeFromMime(file.type),
+      size: formatFileSize(file.size),
+      uploadDate: updatedDate,
+      url: '#'
+    }))
+    poDocuments.value.push(...newDocs)
   }
+  const ref = poReference.value
+  const list = poList.value
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].poReference === ref) {
+      list[i] = { ...list[i], documents: [...poDocuments.value], lastEditedBy: { ...(list[i].lastEditedBy || { name: 'Admin User', initials: 'AD' }), timestamp: updatedDate } }
+      break
+    }
+  }
+  poList.value = list
+  toast({ title: 'Saved', description: `PO ${ref} updated successfully` })
+  isEditMode.value = false
+  poEditedDocuments.value = []
+}
+
+const handlePOFileUpload = (files: File[]) => {
+  poEditedDocuments.value.push(...files)
+}
+const removePODocument = (index: number) => {
+  poDocuments.value.splice(index, 1)
+}
+const removeNewPODocument = (index: number) => {
+  poEditedDocuments.value.splice(index, 1)
+}
+const downloadPODocument = (doc: any) => {
+  toast({ title: 'Downloading', description: `Starting download for ${doc.name}...` })
 }
 
 // Watch for route changes
@@ -300,8 +475,36 @@ watch(() => route.params, () => {
 
 // Load data
 const loadData = () => {
+  const poRef = route.params.poReference as string | undefined
   const quotationNo = route.params.quotationNo as string | undefined
   const rfqNo = route.params.rfqNo as string | undefined
+
+  // Route: /purchase-orders/:poReference — load PO line items
+  if (poRef && poRef.trim() !== '') {
+    const ref = decodeURIComponent(poRef)
+    const items = poList.value.filter((item: any) => item.poReference === ref)
+    if (items.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Not found',
+        description: 'Purchase order not found'
+      })
+      router.push('/purchase-orders')
+      return
+    }
+    poLineItems.value = items
+    const first = items[0]
+    poDocuments.value = first?.documents ? [...first.documents] : []
+    poEditedDocuments.value = []
+    quotationData.value = null
+    sourceRFQ.value = null
+    isEditMode.value = false
+    return
+  }
+
+  poLineItems.value = []
+  poDocuments.value = []
+  poEditedDocuments.value = []
 
   // Route: /quotations/:quotationNo — load quotation only (no RFQ tab)
   if (quotationNo && quotationNo.trim() !== '') {

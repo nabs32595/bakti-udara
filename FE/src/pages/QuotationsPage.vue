@@ -68,7 +68,7 @@
                     type="checkbox" 
                     :checked="allSelected"
                     @change="toggleSelectAll"
-                    class="w-4 h-4 rounded border-gray-300"
+                    class="w-3 h-3 rounded border-gray-300"
                   />
                 </th>
                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('no')">
@@ -116,7 +116,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="item in filteredAndSortedItems" :key="item.id" class="hover:bg-gray-50">
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <input 
                     type="checkbox" 
                     :checked="selectedItemIds.includes(item.id)"
@@ -161,12 +161,12 @@
                 <td class="px-3 py-2 text-xs font-medium" :class="getDaysRemainingClass(item.daysRemaining)">
                   {{ item.daysRemaining }}
                 </td>
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <span :class="getValidityStatusBadgeClass(item.validityStatus)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ item.validityStatus }}
                   </span>
                 </td>
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <div class="flex items-center space-x-2">
                     <Avatar>
                       <AvatarFallback class="bg-gray-200 text-gray-800 text-[11px] font-medium size-6">

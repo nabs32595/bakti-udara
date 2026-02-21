@@ -119,7 +119,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="rfq in filteredAndSortedRFQs" :key="`${rfq.rfqNo}-${rfq.pno}`" class="hover:bg-gray-50">
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <input 
                     type="checkbox" 
                     :checked="selectedRFQs.includes(rfq.rfqNo)"
@@ -147,12 +147,12 @@
                 <td class="px-3 py-2 text-xs text-gray-600">
                   {{ rfq.pno }}
                 </td>
-                <td class="px-3 py-2 text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   <span :class="getAesBadgeClass(rfq.aes)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ rfq.aes }}
                   </span>
                 </td>
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <span :class="getStatusBadgeClass(rfq.status)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ rfq.status }}
                   </span>
@@ -160,7 +160,7 @@
                 <td class="px-3 py-2 text-xs text-gray-600">
                   {{ rfq.date }}
                 </td>
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-xs">
                   <div class="flex items-center space-x-2">
                     <Avatar>
                       <AvatarFallback class="bg-gray-200 text-gray-800 text-[11px] font-medium size-6">

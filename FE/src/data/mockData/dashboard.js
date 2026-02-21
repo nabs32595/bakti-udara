@@ -1,7 +1,7 @@
 export const INITIAL_RECENT_RFQS = [
   {
     id: 1,
-    rfqNo: 'RFQM50-08012025-0001-RO1',
+    rfqNo: 'SPQM50-04012024-0001-NORMAL',
     desc: 'PANEL ASSY, FLOOR, LH',
     pno: '5251409289',
     aes: 'A',
@@ -11,7 +11,7 @@ export const INITIAL_RECENT_RFQS = [
   },
   {
     id: 2,
-    rfqNo: 'RFQM50-08012025-0002-RO1',
+    rfqNo: 'SPQM50-04012024-0002-NORMAL',
     desc: 'RELAY, SOCKET',
     pno: '9742200100',
     aes: 'E',
@@ -21,7 +21,7 @@ export const INITIAL_RECENT_RFQS = [
   },
   {
     id: 3,
-    rfqNo: 'RFQM50-08012025-0003-RO1',
+    rfqNo: 'SPQM50-04012024-0004-NORMAL',
     desc: 'ROD ASSY, PUSH/PULL, FRONT',
     pno: '576.10.09.021',
     aes: 'E',
@@ -31,7 +31,7 @@ export const INITIAL_RECENT_RFQS = [
   },
   {
     id: 4,
-    rfqNo: 'RFQM50-08012025-0004-RO1',
+    rfqNo: 'PA/AOG/M50/040123/EMAIL',
     desc: 'MUDGUARD ASSY',
     pno: '5322009158',
     aes: 'E',
@@ -41,7 +41,7 @@ export const INITIAL_RECENT_RFQS = [
   },
   {
     id: 5,
-    rfqNo: 'RFQM50-08012025-0005-RO1',
+    rfqNo: 'PA/RO1/M50/260123/EMAIL',
     desc: 'NUT',
     pno: '114.40.07.097',
     aes: 'E',

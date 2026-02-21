@@ -2,14 +2,14 @@ export const INITIAL_NOTIFICATIONS = [
   {
     id: '1',
     type: 'collaboration',
-    message: 'You were added as a collaborator to RFQ RFQM50-08012025-0001-RO1',
+    message: 'You were added as a collaborator to RFQ SPQM50-04012024-0001-NORMAL',
     timestamp: '2 minutes ago',
     read: false
   },
   {
     id: '2',
     type: 'collaboration',
-    message: 'RFQ RFQM50-08012025-0001-RO1 was updated by Admin User',
+    message: 'RFQ SPQM50-04012024-0001-NORMAL was updated by Admin User',
     timestamp: '15 minutes ago',
     read: false
   },
@@ -23,7 +23,7 @@ export const INITIAL_NOTIFICATIONS = [
   {
     id: '4',
     type: 'collaboration',
-    message: 'RFQ RFQM50-08012025-0002-RO1 description was modified',
+    message: 'RFQ SPQM50-04012024-0002-NORMAL description was modified',
     timestamp: '1 hour ago',
     read: false
   },
@@ -37,7 +37,7 @@ export const INITIAL_NOTIFICATIONS = [
   {
     id: '6',
     type: 'collaboration',
-    message: 'New document added to RFQ RFQM50-08012025-0001-RO1',
+    message: 'New document added to RFQ SPQM50-04012024-0001-NORMAL',
     timestamp: '3 hours ago',
     read: true
   },
@@ -58,7 +58,7 @@ export const INITIAL_NOTIFICATIONS = [
   {
     id: '9',
     type: 'collaboration',
-    message: 'RFQ RFQM50-08012025-0001-RO1 status changed to Under Review',
+    message: 'RFQ SPQM50-04012024-0001-NORMAL status changed to Under Review',
     timestamp: '1 day ago',
     read: true
   },

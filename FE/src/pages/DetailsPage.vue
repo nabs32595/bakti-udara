@@ -1,12 +1,9 @@
 <template>
-  <DetailPageLayout 
-    :is-edit-mode="isEditMode" 
+  <DetailPageLayout
+    :is-edit-mode="isEditMode"
     background-color="bg-gray-50"
-    :default-tab="defaultTab"
-    :rfq-data="sourceRFQ"
-    :quotation-data="quotationData"
+    :entity-type="quotationData ? 'quotation' : 'rfq'"
   >
-    <!-- Header Slot -->
     <template #header>
       <DetailHeader
         :title="headerTitle"
@@ -14,195 +11,149 @@
         :status="headerStatus"
         :status-badge-class="headerStatusBadgeClass"
         :is-edit-mode="isEditMode"
-        :collaborators="sourceRFQ?.collaborators || quotationData?.collaborators || []"
+        :collaborators="quotationData ? (quotationData.collaborators || []) : (sourceRFQ?.collaborators || [])"
         :entity-type="quotationData ? 'quotation' : 'rfq'"
         :entity-id="quotationData?.quotationNo || sourceRFQ?.rfqNo || ''"
         @go-back="goBack"
       />
     </template>
 
-    <!-- RFQ Content Tab - 2 Column Layout -->
-    <template #rfq-left>
-      <RFQBasicInfo
-        v-if="sourceRFQ"
-        :rfq-data="sourceRFQ"
-        :is-edit-mode="isEditMode && !quotationData"
-        :edit-form-data="rfqEditFormData"
-        :edit-errors="rfqEditErrors"
-        @update:edit-form-data="handleUpdateRFQEditFormData"
-        @clear-error="clearRFQEditError"
-      />
-      <Card v-else>
-        <CardContent class="py-8 text-center">
-          <p class="text-gray-500">No RFQ found</p>
-        </CardContent>
-      </Card>
-
-      <DocumentSection
-        v-if="!quotationData"
-        title="Document Details"
-        description="Attached documents and specifications"
-        :documents="rfqDocuments"
-        :is-edit-mode="isEditMode"
-        :edited-documents="rfqEditedDocuments"
-        @file-upload="handleRFQFileUpload"
-        @remove-document="removeRFQDocument"
-        @remove-new-document="removeNewRFQDocument"
-        @download-document="downloadRFQDocument"
-      />
+    <!-- RFQ details: /rfq/:rfqNo -->
+    <template v-if="!quotationData">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <RFQBasicInfo
+            v-if="sourceRFQ"
+            :rfq-data="sourceRFQ"
+            :is-edit-mode="isEditMode"
+            :edit-form-data="rfqEditFormData"
+            :edit-errors="rfqEditErrors"
+            @update:edit-form-data="handleUpdateRFQEditFormData"
+            @clear-error="clearRFQEditError"
+          />
+          <Card v-else>
+            <CardContent class="py-8 text-center">
+              <p class="text-gray-500">No RFQ found</p>
+            </CardContent>
+          </Card>
+          <DocumentSection
+            title="Document Details"
+            description="Attached documents and specifications"
+            :documents="rfqDocuments"
+            :is-edit-mode="isEditMode"
+            :edited-documents="rfqEditedDocuments"
+            @file-upload="handleRFQFileUpload"
+            @remove-document="removeRFQDocument"
+            @remove-new-document="removeNewRFQDocument"
+            @download-document="downloadRFQDocument"
+          />
+        </div>
+        <div class="space-y-6">
+          <RFQActions
+            :is-edit-mode="isEditMode"
+            :is-submitting="isSubmitting"
+            @edit="editRFQ"
+            @save="saveRFQChanges"
+            @cancel="cancelRFQEdit"
+            @send-to-oem="sendToOEM"
+            @mark-as-quoted="markAsQuoted"
+            @delete="deleteRFQ"
+          />
+          <StatusTimeline
+            title="Status & Timeline"
+            :status-timeline="sourceRFQ?.statusTimeline || []"
+            :timeline-statuses="['Created', 'Under Review', 'Sent to OEM', 'Quoted']"
+            :current-status="sourceRFQ?.status"
+            :is-edit-mode="isEditMode"
+            :status-options="['Under Review', 'Sent to OEM', 'Quoted']"
+            @update:status="handleRFQStatusUpdate"
+          >
+            <template #footer>
+              <div class="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                    {{ sourceRFQ?.lastEditedBy?.initials || 'AD' }}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Last Edited By</p>
+                  <p class="text-xs text-gray-500">{{ sourceRFQ?.lastEditedBy?.name || 'Admin User' }}</p>
+                  <p class="text-xs text-gray-400">{{ sourceRFQ?.lastEditedBy?.timestamp || sourceRFQ?.date }}</p>
+                </div>
+              </div>
+            </template>
+          </StatusTimeline>
+        </div>
+      </div>
     </template>
 
-    <template #rfq-right>
-      <RFQActions
-        v-if="!quotationData"
-        :is-edit-mode="isEditMode"
-        :is-submitting="isSubmitting"
-        @edit="editRFQ"
-        @save="saveRFQChanges"
-        @cancel="cancelRFQEdit"
-        @send-to-oem="sendToOEM"
-        @mark-as-quoted="markAsQuoted"
-        @delete="deleteRFQ"
-      />
-
-      <StatusTimeline
-        v-if="!quotationData"
-        title="Status & Timeline"
-        :status-timeline="sourceRFQ?.statusTimeline || []"
-        :timeline-statuses="['Created', 'Under Review', 'Sent to OEM', 'Quoted']"
-        :current-status="sourceRFQ?.status"
-        :is-edit-mode="isEditMode"
-        :status-options="['Under Review', 'Sent to OEM', 'Quoted']"
-        @update:status="handleRFQStatusUpdate"
-      >
-        <template #footer>
-          <div class="flex items-center space-x-3">
-            <Avatar>
-              <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
-                {{ sourceRFQ?.lastEditedBy?.initials || 'AD' }}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Last Edited By</p>
-              <p class="text-xs text-gray-500">{{ sourceRFQ?.lastEditedBy?.name || 'Admin User' }}</p>
-              <p class="text-xs text-gray-400">{{ sourceRFQ?.lastEditedBy?.timestamp || sourceRFQ?.date }}</p>
-            </div>
+    <!-- Quotation details: /quotations/:quotationNo -->
+    <template v-else>
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <QuotationBasicInfo
+              :quotation-data="quotationData"
+              :is-edit-mode="isEditMode"
+            />
+            <DocumentSection
+              title="Supporting Documents"
+              description="Technical specifications and related documents"
+              :documents="quotationDocuments"
+              :is-edit-mode="isEditMode"
+              :edited-documents="quotationEditedDocuments"
+              @file-upload="handleQuotationFileUpload"
+              @remove-document="removeQuotationDocument"
+              @remove-new-document="removeNewQuotationDocument"
+              @download-document="downloadQuotationDocument"
+            />
           </div>
-        </template>
-      </StatusTimeline>
-
-      <!-- Show RFQ info in read-only mode when viewing quotation -->
-      <RFQBasicInfo
-        v-if="quotationData && sourceRFQ"
-        :rfq-data="sourceRFQ"
-        :is-edit-mode="false"
-        :edit-form-data="{}"
-        :edit-errors="{}"
-      />
-    </template>
-
-    <!-- RFQ Content Tab - Full Width (when viewing quotation) -->
-    <template #rfq-content>
-      <RFQBasicInfo
-        v-if="sourceRFQ"
-        :rfq-data="sourceRFQ"
-        :is-edit-mode="false"
-        :edit-form-data="{}"
-        :edit-errors="{}"
-      />
-      <Card v-else>
-        <CardContent class="py-8 text-center">
-          <p class="text-gray-500">No source RFQ found for this quotation</p>
-        </CardContent>
-      </Card>
-    </template>
-
-    <!-- Quotation Content Tab - 2 Column Layout -->
-    <template #quotation-left>
-      <QuotationBasicInfo
-        v-if="quotationData"
-        :quotation-data="quotationData"
-        :is-edit-mode="isEditMode"
-      />
-
-      <QuotationLineItems
-        v-if="quotationData"
-        :line-items="quotationData?.lineItems || []"
-        :currency="quotationData?.currency"
-        :is-edit-mode="isEditMode"
-      />
-
-      <DocumentSection
-        v-if="quotationData"
-        title="Supporting Documents"
-        description="Technical specifications and related documents"
-        :documents="quotationDocuments"
-        :is-edit-mode="isEditMode"
-        :edited-documents="quotationEditedDocuments"
-        @file-upload="handleQuotationFileUpload"
-        @remove-document="removeQuotationDocument"
-        @remove-new-document="removeNewQuotationDocument"
-        @download-document="downloadQuotationDocument"
-      />
-
-      <!-- Show all quotations for RFQ when no specific quotation selected -->
-      <template v-if="!quotationData && relatedQuotations.length > 0">
-        <QuotationBasicInfo
-          v-for="quotation in relatedQuotations"
-          :key="quotation.quotationNo"
-          :quotation-data="quotation"
-          :is-edit-mode="false"
+          <div class="space-y-6">
+            <QuotationActions
+              :is-edit-mode="isEditMode"
+              :is-submitting="isSubmitting"
+              @edit="editQuotation"
+              @save="saveQuotationChanges"
+              @cancel="cancelQuotationEdit"
+              @send-to-customer="sendToCustomer"
+              @mark-as-accepted="markAsAccepted"
+              @mark-as-rejected="markAsRejected"
+              @export-pdf="exportPDF"
+              @delete="deleteQuotation"
+            />
+            <StatusTimeline
+              title="Status & Timeline"
+              :status-timeline="quotationData?.statusTimeline || []"
+              :timeline-statuses="['Draft', 'Sent', 'Accepted', 'Rejected']"
+              :current-status="quotationData?.validityStatus"
+              :is-edit-mode="isEditMode"
+              @update:status="handleQuotationStatusUpdate"
+            >
+              <template #footer>
+                <div class="flex items-center space-x-3">
+                  <Avatar>
+                    <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                      {{ quotationData?.lastEditedBy?.initials || 'AD' }}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Last Edited By</p>
+                    <p class="text-xs text-gray-500">{{ quotationData?.lastEditedBy?.name || 'Admin User' }}</p>
+                    <p class="text-xs text-gray-400">{{ quotationData?.lastEditedBy?.timestamp || quotationData?.offerDate }}</p>
+                  </div>
+                </div>
+              </template>
+            </StatusTimeline>
+          </div>
+        </div>
+        <QuotationLineItems
+          :line-items="quotationData?.lineItems || []"
+          :currency="quotationData?.currency"
+          :is-edit-mode="isEditMode"
         />
-      </template>
-      <Card v-if="!quotationData && relatedQuotations.length === 0">
-        <CardContent class="py-8 text-center">
-          <p class="text-gray-500">No quotations found for this RFQ</p>
-        </CardContent>
-      </Card>
+      </div>
     </template>
 
-    <template #quotation-right>
-      <QuotationActions
-        v-if="quotationData"
-        :is-edit-mode="isEditMode"
-        :is-submitting="isSubmitting"
-        @edit="editQuotation"
-        @save="saveQuotationChanges"
-        @cancel="cancelQuotationEdit"
-        @send-to-customer="sendToCustomer"
-        @mark-as-accepted="markAsAccepted"
-        @mark-as-rejected="markAsRejected"
-        @export-pdf="exportPDF"
-        @delete="deleteQuotation"
-      />
-
-      <StatusTimeline
-        v-if="quotationData"
-        title="Status & Timeline"
-        :status-timeline="quotationData?.statusTimeline || []"
-        :timeline-statuses="['Draft', 'Sent', 'Accepted', 'Rejected']"
-        :current-status="quotationData?.validityStatus"
-        :is-edit-mode="isEditMode"
-        @update:status="handleQuotationStatusUpdate"
-      >
-        <template #footer>
-          <div class="flex items-center space-x-3">
-            <Avatar>
-              <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
-                {{ quotationData?.lastEditedBy?.initials || 'AD' }}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Last Edited By</p>
-              <p class="text-xs text-gray-500">{{ quotationData?.lastEditedBy?.name || 'Admin User' }}</p>
-              <p class="text-xs text-gray-400">{{ quotationData?.lastEditedBy?.timestamp || quotationData?.offerDate }}</p>
-            </div>
-          </div>
-        </template>
-      </StatusTimeline>
-    </template>
-
-    <!-- Dialogs Slot -->
     <template #dialogs>
       <ConflictResolutionDialog
         v-if="!quotationData"
@@ -254,7 +205,6 @@ const { toast } = useToast()
 // Data
 const quotationData = ref<any>(null)
 const sourceRFQ = ref<any>(null)
-const relatedQuotations = ref<any[]>([])
 
 // RFQ Documents state
 const rfqDocuments = ref<any[]>([])
@@ -291,10 +241,6 @@ const quotationList = useLocalStorage('quotationList', INITIAL_QUOTATION_LIST)
 const rfqList = useLocalStorage('rfqList', INITIAL_RFQ_LIST)
 
 // Computed properties
-const defaultTab = computed(() => {
-  return quotationData.value ? 'quotation' : 'rfq'
-})
-
 const headerTitle = computed(() => {
   if (quotationData.value) {
     return quotationData.value.quotationNo || 'Loading...'
@@ -356,20 +302,44 @@ watch(() => route.params, () => {
 
 // Load data
 const loadData = () => {
-  const rfqNo = route.params.rfqNo as string
   const quotationNo = route.params.quotationNo as string | undefined
+  const rfqNo = route.params.rfqNo as string | undefined
 
-  // Validate rfqNo
-  if (!rfqNo) {
-    console.error('RFQ number is required')
-    goBack()
+  // Route: /quotations/:quotationNo — load quotation only (no RFQ tab)
+  if (quotationNo && quotationNo.trim() !== '') {
+    const foundQuotation = quotationList.value.find((q: any) => q.quotationNo === quotationNo)
+    if (!foundQuotation) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Quotation not found'
+      })
+      router.push('/quotations')
+      return
+    }
+    quotationData.value = foundQuotation
+    sourceRFQ.value = null
+    if (foundQuotation.documents) {
+      quotationDocuments.value = foundQuotation.documents
+    } else {
+      quotationDocuments.value = []
+    }
+    isEditMode.value = false
+    rfqEditErrors.value = {}
+    rfqEditedDocuments.value = []
+    quotationEditedDocuments.value = []
     return
   }
 
-  // Load RFQ
+  // Route: /rfq/:rfqNo — load RFQ only (no quotation tab)
+  if (!rfqNo) {
+    goBack()
+    return
+  }
+  quotationData.value = null
+
   const foundRFQ = rfqList.value.find((rfq: any) => rfq.rfqNo === rfqNo)
   if (!foundRFQ) {
-    console.error('RFQ not found:', rfqNo)
     toast({
       variant: 'destructive',
       title: 'Error',
@@ -379,8 +349,6 @@ const loadData = () => {
     return
   }
   sourceRFQ.value = foundRFQ
-  
-  // Load RFQ documents
   if (foundRFQ.documents) {
     rfqDocuments.value = foundRFQ.documents
     originalRFQDocuments.value = [...foundRFQ.documents]
@@ -389,49 +357,6 @@ const loadData = () => {
     originalRFQDocuments.value = []
   }
 
-  // Load related quotations
-  relatedQuotations.value = quotationList.value.filter(
-    (quotation: any) => quotation.rfqNo === rfqNo
-  )
-
-  // Load quotation if provided and not empty
-  if (quotationNo && quotationNo.trim() !== '') {
-    const foundQuotation = quotationList.value.find((q: any) => q.quotationNo === quotationNo)
-    if (foundQuotation) {
-      // Validate that quotation belongs to this RFQ
-      if (foundQuotation.rfqNo !== rfqNo) {
-        console.error('Quotation does not belong to this RFQ')
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Quotation does not belong to this RFQ'
-        })
-        quotationData.value = null
-      } else {
-        quotationData.value = foundQuotation
-        // Load quotation documents if available
-        if (foundQuotation.documents) {
-          quotationDocuments.value = foundQuotation.documents
-        } else {
-          quotationDocuments.value = []
-        }
-      }
-    } else {
-      console.error('Quotation not found:', quotationNo)
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Quotation not found'
-      })
-      quotationData.value = null
-      // Navigate to RFQ-only view if quotation not found
-      router.push(`/rfq/${rfqNo}/q`)
-    }
-  } else {
-    quotationData.value = null
-  }
-  
-  // Reset edit mode when data changes
   isEditMode.value = false
   rfqEditErrors.value = {}
   rfqEditedDocuments.value = []
@@ -873,8 +798,7 @@ const deleteQuotation = () => {
       title: 'Deleted',
       description: `Quotation ${quotationData.value?.quotationNo} deleted successfully`
     })
-    // Navigate back to RFQ view
-    router.push(`/rfq/${sourceRFQ.value?.rfqNo}/q`)
+    router.push('/quotations')
   }
 }
 

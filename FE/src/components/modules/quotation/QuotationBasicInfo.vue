@@ -15,15 +15,6 @@
           <p class="text-lg font-semibold text-gray-900">{{ quotationData?.referenceNo }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Linked RFQ</Label>
-          <button 
-            @click="navigateToRFQ"
-            class="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-          >
-            {{ quotationData?.rfqNo }}
-          </button>
-        </div>
-        <div>
           <Label class="text-sm font-medium text-gray-500">Currency</Label>
           <p class="text-lg font-semibold text-gray-900">{{ quotationData?.currency }}</p>
         </div>
@@ -58,7 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
@@ -67,14 +57,6 @@ const props = defineProps<{
   quotationData: any
   isEditMode?: boolean
 }>()
-
-const router = useRouter()
-
-const navigateToRFQ = () => {
-  if (props.quotationData?.rfqNo) {
-    router.push(`/rfq/${props.quotationData.rfqNo}/q`)
-  }
-}
 
 const getDaysRemainingClass = (days: number) => {
   if (days < 0) return 'text-red-600'

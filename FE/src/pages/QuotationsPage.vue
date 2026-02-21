@@ -42,8 +42,8 @@
         </div>
         
         <!-- Bulk Actions -->
-        <div v-if="selectedQuotations.length > 0" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-md mb-4">
-          <span class="text-sm text-gray-800">{{ selectedQuotations.length }} quotation(s) selected</span>
+        <div v-if="selectedItemIds.length > 0" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-md mb-4">
+          <span class="text-sm text-gray-800">{{ selectedItemIds.length }} item(s) selected</span>
           <div class="flex items-center space-x-2">
             <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" @click="bulkSendQuotation">
               Send Quotation
@@ -115,62 +115,62 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="quotation in filteredAndSortedQuotations" :key="quotation.quotationNo" class="hover:bg-gray-50">
+              <tr v-for="item in filteredAndSortedItems" :key="item.id" class="hover:bg-gray-50">
                 <td class="px-4 py-3">
                   <input 
                     type="checkbox" 
-                    :checked="selectedQuotations.includes(quotation.quotationNo)"
-                    @change="toggleSelect(quotation.quotationNo)"
+                    :checked="selectedItemIds.includes(item.id)"
+                    @change="toggleSelect(item.id)"
                     class="w-4 h-4 rounded border-gray-300"
                   />
                 </td>
                 <td class="px-4 py-3 text-sm font-medium text-gray-900">
-                  {{ quotation.no }}
+                  {{ item.no }}
                 </td>
                 <td class="px-4 py-3 text-sm font-medium text-gray-900">
                   <button 
-                    @click="viewQuotationDetails(quotation.quotationNo)"
-                    class="text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
+                    @click="viewQuotationDetails(item.quotationNo)"
+                    class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                   >
-                    {{ quotation.quotationNo }}
+                    {{ item.quotationNo }}
                   </button>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-700">
                   <button 
-                    @click="viewRFQDetails(quotation.rfqNo)"
-                    class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    @click="viewRFQDetails(item.rfqNo)"
+                    class="text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
                   >
-                    {{ quotation.rfqNo }}
+                    {{ item.rfqNo }}
                   </button>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-700">
-                  {{ quotation.lineItems[0]?.desc || '-' }}
+                  {{ item.desc || '-' }}
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-600">
-                  {{ quotation.lineItems[0]?.pno || '-' }}
+                  {{ item.pno || '-' }}
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-600">
-                  {{ quotation.offerDate }}
+                  {{ item.offerDate }}
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-600">
-                  {{ quotation.validityDate }}
+                  {{ item.validityDate }}
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-900 font-medium">
-                  {{ formatCurrency(quotation.totalAmount) }}
+                  {{ formatCurrency(item.totalAmount) }}
                 </td>
-                <td class="px-4 py-3 text-sm font-medium" :class="getDaysRemainingClass(quotation.daysRemaining)">
-                  {{ quotation.daysRemaining }}
+                <td class="px-4 py-3 text-sm font-medium" :class="getDaysRemainingClass(item.daysRemaining)">
+                  {{ item.daysRemaining }}
                 </td>
                 <td class="px-4 py-3">
-                  <span :class="getValidityStatusBadgeClass(quotation.validityStatus)" class="px-2 py-1 text-xs rounded-full font-medium">
-                    {{ quotation.validityStatus }}
+                  <span :class="getValidityStatusBadgeClass(item.validityStatus)" class="px-2 py-1 text-xs rounded-full font-medium">
+                    {{ item.validityStatus }}
                   </span>
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex items-center space-x-2">
                     <Avatar>
                       <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium">
-                        {{ quotation.lastEditedBy.initials }}
+                        {{ item.lastEditedBy.initials }}
                       </AvatarFallback>
                     </Avatar>
                   </div>
@@ -183,7 +183,7 @@
         <!-- Pagination -->
         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
           <div class="text-sm text-gray-600">
-            Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredItemsCount) }} of {{ filteredItemsCount }} quotations
+            Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredItemsCount) }} of {{ filteredItemsCount }} items
           </div>
           <div class="flex items-center space-x-2">
             <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" :disabled="currentPage === 1" @click="prevPage">
@@ -208,7 +208,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useLocalStorage } from '@/composables/useLocalStorage'
-import { INITIAL_QUOTATION_LIST } from '@/data/mockData/quotations'
+import { INITIAL_QUOTATION_LIST, buildQuotationTableItems } from '@/data/mockData/quotations'
 
 // Router
 const router = useRouter()
@@ -224,8 +224,8 @@ const statusFilter = ref('')
 const sortColumn = ref('')
 const sortDirection = ref<'asc' | 'desc'>('asc')
 
-// Multi-select state
-const selectedQuotations = ref<string[]>([])
+// Multi-select state (by item id: quotationNo-lineNo)
+const selectedItemIds = ref<string[]>([])
 
 // Pagination state
 const currentPage = ref(1)
@@ -235,48 +235,51 @@ const filteredItemsCount = ref(0)
 // Use localStorage for quotation list
 const quotationList = useLocalStorage('quotationList', INITIAL_QUOTATION_LIST)
 
-// Computed: Filtered and sorted quotations
-const filteredAndSortedQuotations = computed(() => {
-  let result = [...quotationList.value]
-  
+// Table data: one row per line item (flattened, not grouped by quotation)
+const tableItems = computed(() => buildQuotationTableItems(quotationList.value))
+
+// Computed: Filtered and sorted items (individual line items)
+const filteredAndSortedItems = computed(() => {
+  let result = [...tableItems.value]
+
   // Apply search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    result = result.filter(quotation => 
-      quotation.quotationNo.toLowerCase().includes(query) ||
-      quotation.rfqNo.toLowerCase().includes(query) ||
-      (quotation.lineItems[0]?.desc || '').toLowerCase().includes(query) ||
-      (quotation.lineItems[0]?.pno || '').toLowerCase().includes(query)
+    result = result.filter(item =>
+      item.quotationNo.toLowerCase().includes(query) ||
+      item.rfqNo.toLowerCase().includes(query) ||
+      (item.desc || '').toLowerCase().includes(query) ||
+      (item.pno || '').toLowerCase().includes(query)
     )
   }
-  
+
   // Apply status filter
   if (statusFilter.value) {
-    result = result.filter(quotation => quotation.validityStatus === statusFilter.value)
+    result = result.filter(item => item.validityStatus === statusFilter.value)
   }
-  
+
   // Apply sorting
   if (sortColumn.value) {
     result.sort((a, b) => {
       let aVal: any = a[sortColumn.value as keyof typeof a]
       let bVal: any = b[sortColumn.value as keyof typeof b]
-      
+
       // Use timestamp for date sorting
       if (sortColumn.value === 'offerDate' || sortColumn.value === 'validityDate') {
         aVal = a.timestamp
         bVal = b.timestamp
       }
-      
+
       if (aVal < bVal) return sortDirection.value === 'asc' ? -1 : 1
       if (aVal > bVal) return sortDirection.value === 'asc' ? 1 : -1
       return 0
     })
   }
-  
+
   // Store total filtered items count for pagination info
   filteredItemsCount.value = result.length
 
-  // Apply pagination - limit to itemsPerPage items for the current page
+  // Apply pagination
   const startIndex = (currentPage.value - 1) * itemsPerPage.value
   const endIndex = startIndex + itemsPerPage.value
   result = result.slice(startIndex, endIndex)
@@ -286,8 +289,8 @@ const filteredAndSortedQuotations = computed(() => {
 
 // Computed: All selected
 const allSelected = computed(() => {
-  return filteredAndSortedQuotations.value.length > 0 && 
-         filteredAndSortedQuotations.value.every(quotation => selectedQuotations.value.includes(quotation.quotationNo))
+  return filteredAndSortedItems.value.length > 0 &&
+    filteredAndSortedItems.value.every(item => selectedItemIds.value.includes(item.id))
 })
 
 // Computed: Total pages
@@ -307,57 +310,55 @@ const sortBy = (column: string) => {
 
 // Methods: Multi-select
 const toggleSelect = (id: string) => {
-  const index = selectedQuotations.value.indexOf(id)
+  const index = selectedItemIds.value.indexOf(id)
   if (index > -1) {
-    selectedQuotations.value.splice(index, 1)
+    selectedItemIds.value.splice(index, 1)
   } else {
-    selectedQuotations.value.push(id)
+    selectedItemIds.value.push(id)
   }
 }
 
 const toggleSelectAll = () => {
   if (allSelected.value) {
-    selectedQuotations.value = []
+    selectedItemIds.value = []
   } else {
-    selectedQuotations.value = filteredAndSortedQuotations.value.map(quotation => quotation.quotationNo)
+    selectedItemIds.value = filteredAndSortedItems.value.map(item => item.id)
   }
 }
 
 const clearSelection = () => {
-  selectedQuotations.value = []
+  selectedItemIds.value = []
 }
 
 // Methods: Bulk actions
 const bulkSendQuotation = () => {
   toast({
     title: 'Sending Quotations',
-    description: `Sending ${selectedQuotations.value.length} quotation(s) to customers`
+    description: `Sending ${selectedItemIds.value.length} item(s) to customers`
   })
-  // Here you would make API call to update status
   clearSelection()
 }
 
 const bulkDelete = () => {
-  if (confirm(`Are you sure you want to delete ${selectedQuotations.value.length} quotation(s)?`)) {
+  if (confirm(`Are you sure you want to delete ${selectedItemIds.value.length} item(s)?`)) {
     toast({
       title: 'Deleted',
-      description: `${selectedQuotations.value.length} quotation(s) deleted successfully`
+      description: `${selectedItemIds.value.length} item(s) deleted successfully`
     })
-    // Here you would make API call to delete
     clearSelection()
   }
 }
 
 // Methods: Individual actions
 const viewQuotationDetails = (quotationNo: string) => {
-  const quotation = quotationList.value.find(q => q.quotationNo === quotationNo)
+  const quotation = quotationList.value.find((q: { quotationNo: string }) => q.quotationNo === quotationNo)
   if (quotation?.rfqNo) {
-    router.push(`/rfq/${quotation.rfqNo}/q/${quotationNo}`)
+    router.push(`/quotations/${quotationNo}`)
   }
 }
 
 const viewRFQDetails = (rfqNo: string) => {
-  router.push(`/rfq/${rfqNo}/q`)
+  router.push(`/rfq/${rfqNo}`)
 }
 
 // Methods: Pagination

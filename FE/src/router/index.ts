@@ -28,13 +28,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/QuotationsPage.vue')
   },
   {
-    path: '/rfq/:rfqNo/q/:quotationNo',
-    name: 'Details',
+    path: '/rfq/:rfqNo',
+    name: 'RFQ Details',
     component: () => import('@/pages/DetailsPage.vue')
   },
   {
-    path: '/rfq/:rfqNo/q',
-    name: 'RFQ Details',
+    path: '/quotations/:quotationNo',
+    name: 'Quotation Details',
     component: () => import('@/pages/DetailsPage.vue')
   },
   {

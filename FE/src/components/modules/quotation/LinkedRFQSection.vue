@@ -55,7 +55,7 @@ const router = useRouter()
 
 const navigateToRFQ = () => {
   if (props.rfqNo) {
-    router.push(`/rfq/${props.rfqNo}/q`)
+    router.push(`/rfq/${props.rfqNo}`)
   }
 }
 

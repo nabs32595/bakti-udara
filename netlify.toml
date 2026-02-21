@@ -1,6 +1,6 @@
 [build]
   base = "FE"
-  command = "npm vite build"
+  command = "npm run build"
   publish = "FE/dist"
 
 # SPA fallback: all routes serve index.html for Vue Router

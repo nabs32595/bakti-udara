@@ -7,33 +7,33 @@
     <CardContent class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label class="text-sm font-medium text-gray-500">Quotation Number</Label>
-          <p class="text-lg font-semibold text-gray-900">{{ quotationData?.quotationNo }}</p>
+          <Label class="text-xs font-medium text-gray-500">Quotation Number</Label>
+          <p class="text-base font-semibold text-gray-900">{{ quotationData?.quotationNo }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Reference No</Label>
-          <p class="text-lg font-semibold text-gray-900">{{ quotationData?.referenceNo }}</p>
+          <Label class="text-xs font-medium text-gray-500">Reference No</Label>
+          <p class="text-base font-semibold text-gray-900">{{ quotationData?.referenceNo }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Currency</Label>
-          <p class="text-lg font-semibold text-gray-900">{{ quotationData?.currency }}</p>
+          <Label class="text-xs font-medium text-gray-500">Currency</Label>
+          <p class="text-base font-semibold text-gray-900">{{ quotationData?.currency }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Offer Date</Label>
-          <p class="text-lg text-gray-900">{{ quotationData?.offerDate }}</p>
+          <Label class="text-xs font-medium text-gray-500">Offer Date</Label>
+          <p class="text-base text-gray-900">{{ quotationData?.offerDate }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Validity Date</Label>
-          <p class="text-lg text-gray-900">{{ quotationData?.validityDate }}</p>
+          <Label class="text-xs font-medium text-gray-500">Validity Date</Label>
+          <p class="text-base text-gray-900">{{ quotationData?.validityDate }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Days Remaining</Label>
-          <p class="text-lg font-semibold" :class="getDaysRemainingClass(quotationData?.daysRemaining)">
+          <Label class="text-xs font-medium text-gray-500">Days Remaining</Label>
+          <p class="text-base font-semibold" :class="getDaysRemainingClass(quotationData?.daysRemaining)">
             {{ quotationData?.daysRemaining }} days
           </p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Validity Status</Label>
+          <Label class="text-xs font-medium text-gray-500">Validity Status</Label>
           <Badge :class="getValidityStatusBadgeClass(quotationData?.validityStatus)">
             {{ quotationData?.validityStatus }}
           </Badge>
@@ -41,8 +41,8 @@
       </div>
       
       <div class="pt-4 border-t border-gray-200">
-        <Label class="text-sm font-medium text-gray-500">Total Amount</Label>
-        <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(quotationData?.totalAmount) }}</p>
+        <Label class="text-xs font-medium text-gray-500">Total Amount</Label>
+        <p class="text-xl font-bold text-gray-900">{{ formatCurrency(quotationData?.totalAmount) }}</p>
       </div>
     </CardContent>
   </Card>

@@ -14,8 +14,8 @@
           <span>Back</span>
         </Button>
         <div>
-          <h1 class="text-xl font-semibold text-gray-900">{{ title }}</h1>
-          <p class="text-sm text-gray-500">{{ subtitle }}</p>
+          <h1 class="text-lg font-semibold text-gray-900">{{ title }}</h1>
+          <p class="text-xs text-gray-500">{{ subtitle }}</p>
         </div>
       </div>
       <div class="flex items-center space-x-2">

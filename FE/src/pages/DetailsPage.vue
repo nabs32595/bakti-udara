@@ -33,7 +33,7 @@
           />
           <Card v-else>
             <CardContent class="py-8 text-center">
-              <p class="text-gray-500">No RFQ found</p>
+              <p class="text-sm text-gray-500">No RFQ found</p>
             </CardContent>
           </Card>
           <DocumentSection
@@ -71,14 +71,14 @@
             <template #footer>
               <div class="flex items-center space-x-3">
                 <Avatar>
-                  <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                  <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium size-6">
                     {{ sourceRFQ?.lastEditedBy?.initials || 'AD' }}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p class="text-sm font-medium text-gray-900">Last Edited By</p>
-                  <p class="text-xs text-gray-500">{{ sourceRFQ?.lastEditedBy?.name || 'Admin User' }}</p>
-                  <p class="text-xs text-gray-400">{{ sourceRFQ?.lastEditedBy?.timestamp || sourceRFQ?.date }}</p>
+                  <p class="text-xs font-medium text-gray-900">Last Edited By</p>
+                  <p class="text-[11px] text-gray-500">{{ sourceRFQ?.lastEditedBy?.name || 'Admin User' }}</p>
+                  <p class="text-[11px] text-gray-400">{{ sourceRFQ?.lastEditedBy?.timestamp || sourceRFQ?.date }}</p>
                 </div>
               </div>
             </template>
@@ -116,8 +116,6 @@
               @save="saveQuotationChanges"
               @cancel="cancelQuotationEdit"
               @send-to-customer="sendToCustomer"
-              @mark-as-accepted="markAsAccepted"
-              @mark-as-rejected="markAsRejected"
               @export-pdf="exportPDF"
               @delete="deleteQuotation"
             />
@@ -132,14 +130,14 @@
               <template #footer>
                 <div class="flex items-center space-x-3">
                   <Avatar>
-                    <AvatarFallback class="bg-gray-200 text-gray-800 text-sm font-medium">
+                    <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium size-6">
                       {{ quotationData?.lastEditedBy?.initials || 'AD' }}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p class="text-sm font-medium text-gray-900">Last Edited By</p>
-                    <p class="text-xs text-gray-500">{{ quotationData?.lastEditedBy?.name || 'Admin User' }}</p>
-                    <p class="text-xs text-gray-400">{{ quotationData?.lastEditedBy?.timestamp || quotationData?.offerDate }}</p>
+                    <p class="text-xs font-medium text-gray-900">Last Edited By</p>
+                    <p class="text-[11px] text-gray-500">{{ quotationData?.lastEditedBy?.name || 'Admin User' }}</p>
+                    <p class="text-[11px] text-gray-400">{{ quotationData?.lastEditedBy?.timestamp || quotationData?.offerDate }}</p>
                   </div>
                 </div>
               </template>
@@ -761,28 +759,6 @@ const sendToCustomer = () => {
     title: 'Sending Quotation',
     description: `Quotation ${quotationData.value?.quotationNo} sent to customer`
   })
-}
-
-const markAsAccepted = () => {
-  if (quotationData.value) {
-    quotationData.value.validityStatus = 'Accepted'
-    
-    toast({
-      title: 'Marked as Accepted',
-      description: `Quotation ${quotationData.value.quotationNo} marked as accepted`
-    })
-  }
-}
-
-const markAsRejected = () => {
-  if (quotationData.value) {
-    quotationData.value.validityStatus = 'Rejected'
-    
-    toast({
-      title: 'Marked as Rejected',
-      description: `Quotation ${quotationData.value.quotationNo} marked as rejected`
-    })
-  }
 }
 
 const exportPDF = () => {

@@ -7,7 +7,7 @@
       <div class="space-y-4">
         <!-- Current Status (Editable in Edit Mode) -->
         <div v-if="isEditMode && statusOptions" class="space-y-2">
-          <Label class="text-sm font-medium text-gray-700">Current Status</Label>
+          <Label class="text-xs font-medium text-gray-700">Current Status</Label>
           <select
             :value="currentStatus"
             @change="handleStatusChange(($event.target as HTMLSelectElement).value)"
@@ -32,13 +32,13 @@
             ></div>
             <div>
               <p 
-                class="text-sm"
+                class="text-xs"
                 :class="isStatusCompleted(status) ? 'font-medium text-gray-900' : 'text-gray-500'"
               >
                 {{ status }}
               </p>
               <p 
-                class="text-xs"
+                class="text-[11px]"
                 :class="isStatusCompleted(status) ? 'text-gray-500' : 'text-gray-400'"
               >
                 {{ getStatusTimestamp(status) }}

@@ -7,8 +7,8 @@
     <CardContent class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label class="text-sm font-medium text-gray-500">Item Number</Label>
-          <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.no }}</p>
+          <Label class="text-xs font-medium text-gray-500">Item Number</Label>
+          <p v-if="!isEditMode" class="text-base font-semibold text-gray-900">{{ rfqData?.no }}</p>
           <Input
             v-else
             :model-value="editFormData.no"
@@ -20,8 +20,8 @@
           <p v-if="editErrors.no" class="text-xs text-gray-600 mt-1">{{ editErrors.no }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Reference No</Label>
-          <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.referenceNo }}</p>
+          <Label class="text-xs font-medium text-gray-500">Reference No</Label>
+          <p v-if="!isEditMode" class="text-base font-semibold text-gray-900">{{ rfqData?.referenceNo }}</p>
           <Input
             v-else
             :model-value="editFormData.referenceNo"
@@ -33,8 +33,8 @@
           <p v-if="editErrors.referenceNo" class="text-xs text-gray-600 mt-1">{{ editErrors.referenceNo }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Part Number</Label>
-          <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.pno }}</p>
+          <Label class="text-xs font-medium text-gray-500">Part Number</Label>
+          <p v-if="!isEditMode" class="text-base font-semibold text-gray-900">{{ rfqData?.pno }}</p>
           <Input
             v-else
             :model-value="editFormData.pno"
@@ -46,8 +46,8 @@
           <p v-if="editErrors.pno" class="text-xs text-gray-600 mt-1">{{ editErrors.pno }}</p>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Quantity</Label>
-          <p v-if="!isEditMode" class="text-lg font-semibold text-gray-900">{{ rfqData?.quantity }} EA</p>
+          <Label class="text-xs font-medium text-gray-500">Quantity</Label>
+          <p v-if="!isEditMode" class="text-base font-semibold text-gray-900">{{ rfqData?.quantity }} EA</p>
           <Input
             v-else
             :model-value="editFormData.quantity"
@@ -61,8 +61,8 @@
         </div>
       </div>
       <div>
-        <Label class="text-sm font-medium text-gray-500">Description</Label>
-        <p v-if="!isEditMode" class="text-lg text-gray-900 mt-1">{{ rfqData?.desc }}</p>
+        <Label class="text-xs font-medium text-gray-500">Description</Label>
+        <p v-if="!isEditMode" class="text-base text-gray-900 mt-1">{{ rfqData?.desc }}</p>
         <textarea
           v-else
           :value="editFormData.desc"
@@ -75,7 +75,7 @@
       </div>
       <div class="flex items-center space-x-4">
         <div>
-          <Label class="text-sm font-medium text-gray-500">AES Classification</Label>
+          <Label class="text-xs font-medium text-gray-500">AES Classification</Label>
           <div class="mt-1">
             <Badge v-if="!isEditMode" :class="getAesBadgeClass(rfqData?.aes || '')">
               {{ rfqData?.aes }}
@@ -95,8 +95,8 @@
           </div>
         </div>
         <div>
-          <Label class="text-sm font-medium text-gray-500">Date</Label>
-          <p class="text-sm text-gray-900 mt-1">{{ rfqData?.date }}</p>
+          <Label class="text-xs font-medium text-gray-500">Date</Label>
+          <p class="text-xs text-gray-900 mt-1">{{ rfqData?.date }}</p>
         </div>
       </div>
     </CardContent>

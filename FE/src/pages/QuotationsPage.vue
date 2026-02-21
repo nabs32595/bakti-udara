@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold tracking-tight">Quotations</h2>
-      <p class="text-muted-foreground">
+      <h2 class="text-xl font-bold tracking-tight">Quotations</h2>
+      <p class="text-muted-foreground text-sm">
         Manage quotations sent to customers
       </p>
     </div>
@@ -11,8 +11,8 @@
       <CardHeader>
         <div class="flex items-center justify-between mb-4">
           <div>
-            <CardTitle class="text-gray-700">Quotation List</CardTitle>
-            <CardDescription class="text-gray-500">Manage all customer quotations</CardDescription>
+            <CardTitle class="text-gray-700 text-base">Quotation List</CardTitle>
+            <CardDescription class="text-gray-500 text-sm">Manage all customer quotations</CardDescription>
           </div>
           <div class="flex items-center space-x-2">
             <Button 
@@ -43,7 +43,7 @@
         
         <!-- Bulk Actions -->
         <div v-if="selectedItemIds.length > 0" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-md mb-4">
-          <span class="text-sm text-gray-800">{{ selectedItemIds.length }} item(s) selected</span>
+          <span class="text-xs text-gray-800">{{ selectedItemIds.length }} item(s) selected</span>
           <div class="flex items-center space-x-2">
             <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" @click="bulkSendQuotation">
               Send Quotation
@@ -63,7 +63,7 @@
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-4 py-3 text-left">
+                <th class="px-3 py-2 text-left">
                   <input 
                     type="checkbox" 
                     :checked="allSelected"
@@ -71,63 +71,63 @@
                     class="w-4 h-4 rounded border-gray-300"
                   />
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('no')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('no')">
                   NO
                   <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('quotationNo')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('quotationNo')">
                   QUOTATION NO
                   <span v-if="sortColumn === 'quotationNo'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('rfqNo')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('rfqNo')">
                   RFQ NO
                   <span v-if="sortColumn === 'rfqNo'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   DESCRIPTION
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   P/NO
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('offerDate')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('offerDate')">
                   OFFER DATE
                   <span v-if="sortColumn === 'offerDate'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('validityDate')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('validityDate')">
                   VALIDITY DATE
                   <span v-if="sortColumn === 'validityDate'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('totalAmount')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('totalAmount')">
                   TOTAL PRICE (CHF)
                   <span v-if="sortColumn === 'totalAmount'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('daysRemaining')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('daysRemaining')">
                   DAYS REMAINING
                   <span v-if="sortColumn === 'daysRemaining'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('validityStatus')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('validityStatus')">
                   VALIDITY STATUS
                   <span v-if="sortColumn === 'validityStatus'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   LAST EDITED BY
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="item in filteredAndSortedItems" :key="item.id" class="hover:bg-gray-50">
-                <td class="px-4 py-3">
+                <td class="px-3 py-2">
                   <input 
                     type="checkbox" 
                     :checked="selectedItemIds.includes(item.id)"
                     @change="toggleSelect(item.id)"
-                    class="w-4 h-4 rounded border-gray-300"
+                    class="w-3 h-3 rounded border-gray-300"
                   />
                 </td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                <td class="px-3 py-2 text-xs font-medium text-gray-900">
                   {{ item.no }}
                 </td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                <td class="px-3 py-2 text-xs font-medium text-gray-900">
                   <button 
                     @click="viewQuotationDetails(item.quotationNo)"
                     class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
@@ -135,7 +135,7 @@
                     {{ item.quotationNo }}
                   </button>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-700">
+                <td class="px-3 py-2 text-xs text-gray-700">
                   <button 
                     @click="viewRFQDetails(item.rfqNo)"
                     class="text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
@@ -143,33 +143,33 @@
                     {{ item.rfqNo }}
                   </button>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-700">
+                <td class="px-3 py-2 text-xs text-gray-700">
                   {{ item.desc || '-' }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ item.pno || '-' }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ item.offerDate }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ item.validityDate }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-900 font-medium">
+                <td class="px-3 py-2 text-xs text-gray-900 font-medium">
                   {{ formatCurrency(item.totalAmount) }}
                 </td>
-                <td class="px-4 py-3 text-sm font-medium" :class="getDaysRemainingClass(item.daysRemaining)">
+                <td class="px-3 py-2 text-xs font-medium" :class="getDaysRemainingClass(item.daysRemaining)">
                   {{ item.daysRemaining }}
                 </td>
-                <td class="px-4 py-3">
-                  <span :class="getValidityStatusBadgeClass(item.validityStatus)" class="px-2 py-1 text-xs rounded-full font-medium">
+                <td class="px-3 py-2">
+                  <span :class="getValidityStatusBadgeClass(item.validityStatus)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ item.validityStatus }}
                   </span>
                 </td>
-                <td class="px-4 py-3">
+                <td class="px-3 py-2">
                   <div class="flex items-center space-x-2">
                     <Avatar>
-                      <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium">
+                      <AvatarFallback class="bg-gray-200 text-gray-800 text-[11px] font-medium size-6">
                         {{ item.lastEditedBy.initials }}
                       </AvatarFallback>
                     </Avatar>
@@ -182,15 +182,15 @@
         
         <!-- Pagination -->
         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-          <div class="text-sm text-gray-600">
+          <div class="text-xs text-gray-600">
             Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredItemsCount) }} of {{ filteredItemsCount }} items
           </div>
           <div class="flex items-center space-x-2">
-            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" :disabled="currentPage === 1" @click="prevPage">
+            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700 text-xs" :disabled="currentPage === 1" @click="prevPage">
               Previous
             </Button>
-            <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
-            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" :disabled="currentPage === totalPages" @click="nextPage">
+            <span class="text-xs text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
+            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700 text-xs" :disabled="currentPage === totalPages" @click="nextPage">
               Next
             </Button>
           </div>
@@ -377,10 +377,10 @@ const nextPage = () => {
 // Helper methods for styling and formatting
 const getValidityStatusBadgeClass = (status: string) => {
   const classes = {
-    'Active': 'bg-green-100 text-green-800',
-    'Expired': 'bg-red-100 text-red-800'
+    'Active': 'bg-emerald-100 text-emerald-800',
+    'Expired': 'bg-red-200 text-red-800'
   }
-  return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+  return classes[status as keyof typeof classes] || 'bg-slate-100 text-slate-700'
 }
 
 const getDaysRemainingClass = (days: number) => {

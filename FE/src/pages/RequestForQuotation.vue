@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold tracking-tight">Request For Quotation (RFQ)</h2>
-      <p class="text-muted-foreground">
+      <h2 class="text-xl font-bold tracking-tight">Request For Quotation (RFQ)</h2>
+      <p class="text-muted-foreground text-sm">
         Manage incoming quotation requests from customers
       </p>
     </div>
@@ -11,8 +11,8 @@
       <CardHeader>
         <div class="flex items-center justify-between mb-4">
           <div>
-            <CardTitle class="text-gray-700">RFQ List</CardTitle>
-            <CardDescription class="text-gray-500">Manage all quotation requests</CardDescription>
+            <CardTitle class="text-gray-700 text-base">RFQ List</CardTitle>
+            <CardDescription class="text-gray-500 text-sm">Manage all quotation requests</CardDescription>
           </div>
           <div class="flex items-center space-x-2">
             <Button 
@@ -49,7 +49,7 @@
         
         <!-- Bulk Actions -->
         <div v-if="selectedRFQs.length > 0" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-md mb-4">
-          <span class="text-sm text-gray-800">{{ selectedRFQs.length }} RFQ(s) selected</span>
+          <span class="text-xs text-gray-800">{{ selectedRFQs.length }} RFQ(s) selected</span>
           <div class="flex items-center space-x-2">
             <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" @click="bulkSendToOEM">
               Send to OEM
@@ -72,98 +72,98 @@
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-4 py-3 text-left">
+                <th class="px-3 py-2 text-left">
                   <input 
                     type="checkbox" 
                     :checked="allSelected"
                     @change="toggleSelectAll"
-                    class="w-4 h-4 rounded border-gray-300"
+                    class="w-3 h-3 rounded border-gray-300"
                   />
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('no')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('no')">
                   NO
                   <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('rfqNo')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('rfqNo')">
                   RFQ NO
                   <span v-if="sortColumn === 'rfqNo'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('desc')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('desc')">
                   DESC
                   <span v-if="sortColumn === 'desc'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('quantity')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('quantity')">
                   QUANTITY (EA)
                   <span v-if="sortColumn === 'quantity'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('pno')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('pno')">
                   P/NO
                   <span v-if="sortColumn === 'pno'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('aes')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('aes')">
                   AES
                   <span v-if="sortColumn === 'aes'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('status')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('status')">
                   Status
                   <span v-if="sortColumn === 'status'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('date')">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" @click="sortBy('date')">
                   Date
                   <span v-if="sortColumn === 'date'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   LAST EDITED BY
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="rfq in filteredAndSortedRFQs" :key="rfq.rfqNo" class="hover:bg-gray-50">
-                <td class="px-4 py-3">
+              <tr v-for="rfq in filteredAndSortedRFQs" :key="`${rfq.rfqNo}-${rfq.pno}`" class="hover:bg-gray-50">
+                <td class="px-3 py-2">
                   <input 
                     type="checkbox" 
                     :checked="selectedRFQs.includes(rfq.rfqNo)"
                     @change="toggleSelect(rfq.rfqNo)"
-                    class="w-4 h-4 rounded border-gray-300"
+                    class="w-3 h-3 rounded border-gray-300"
                   />
                 </td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                <td class="px-3 py-2 text-xs font-medium text-gray-900">
                   {{ rfq.no }}
                 </td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                <td class="px-3 py-2 text-xs font-medium text-gray-900">
                   <button 
                     @click="viewRFQDetails(rfq.rfqNo)"
-                    class="text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
+                    class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                   >
                     {{ rfq.rfqNo }}
                   </button>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-700">
+                <td class="px-3 py-2 text-xs text-gray-700">
                   {{ rfq.desc }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ rfq.quantity }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ rfq.pno }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
-                  <span :class="getAesBadgeClass(rfq.aes)" class="px-2 py-1 text-xs rounded-full">
+                <td class="px-3 py-2 text-gray-600">
+                  <span :class="getAesBadgeClass(rfq.aes)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ rfq.aes }}
                   </span>
                 </td>
-                <td class="px-4 py-3">
-                  <span :class="getStatusBadgeClass(rfq.status)" class="px-2 py-1 text-xs rounded-full">
+                <td class="px-3 py-2">
+                  <span :class="getStatusBadgeClass(rfq.status)" class="px-2 py-0.5 text-[11px] rounded-full font-medium">
                     {{ rfq.status }}
                   </span>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600">
+                <td class="px-3 py-2 text-xs text-gray-600">
                   {{ rfq.date }}
                 </td>
-                <td class="px-4 py-3">
+                <td class="px-3 py-2">
                   <div class="flex items-center space-x-2">
                     <Avatar>
-                      <AvatarFallback class="bg-gray-200 text-gray-800 text-xs font-medium">
+                      <AvatarFallback class="bg-gray-200 text-gray-800 text-[11px] font-medium size-6">
                         {{ rfq.lastEditedBy.initials }}
                       </AvatarFallback>
                     </Avatar>
@@ -176,15 +176,15 @@
         
         <!-- Pagination -->
         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-          <div class="text-sm text-gray-600">
+          <div class="text-xs text-gray-600">
             Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredItemsCount) }} of {{ filteredItemsCount }} RFQs
           </div>
           <div class="flex items-center space-x-2">
-            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" :disabled="currentPage === 1" @click="prevPage">
+            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700 text-xs" :disabled="currentPage === 1" @click="prevPage">
               Previous
             </Button>
-            <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
-            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700" :disabled="currentPage === totalPages" @click="nextPage">
+            <span class="text-xs text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
+            <Button variant="outline" size="sm" class="border-gray-300 text-gray-700 text-xs" :disabled="currentPage === totalPages" @click="nextPage">
               Next
             </Button>
           </div>
@@ -414,18 +414,18 @@ const nextPage = () => {
 
 const getStatusBadgeClass = (status: string) => {
   const classes = {
-    'Under Review': 'bg-gray-200 text-gray-800',
-    'Sent to OEM': 'bg-gray-300 text-gray-800',
-    'Quoted': 'bg-gray-400 text-gray-900'
+    'Under Review': 'bg-amber-100 text-amber-800',
+    'Sent to OEM': 'bg-blue-100 text-blue-800',
+    'Quoted': 'bg-emerald-100 text-emerald-800'
   }
-  return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+  return classes[status as keyof typeof classes] || 'bg-slate-100 text-slate-700'
 }
 
 const getAesBadgeClass = (aes: string) => {
   const classes = {
-    'A': 'bg-gray-200 text-gray-800',
-    'E': 'bg-gray-300 text-gray-800'
+    'A': 'bg-blue-100 text-blue-800',
+    'E': 'bg-violet-100 text-violet-800'
   }
-  return classes[aes as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+  return classes[aes as keyof typeof classes] || 'bg-slate-100 text-slate-700'
 }
 </script>

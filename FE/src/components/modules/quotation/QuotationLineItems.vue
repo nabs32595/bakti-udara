@@ -6,7 +6,7 @@
     </CardHeader>
     <CardContent>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-xs">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">S.No.</th>
@@ -42,10 +42,10 @@
           </tbody>
           <tfoot class="bg-gray-50 border-t-2 border-gray-300">
             <tr>
-              <td colspan="8" class="px-3 py-3 text-right text-sm font-semibold text-gray-700">
+              <td colspan="8" class="px-3 py-3 text-right text-xs font-semibold text-gray-700">
                 Grand Total:
               </td>
-              <td class="px-3 py-3 text-right text-lg font-bold text-gray-900">
+              <td class="px-3 py-3 text-right text-base font-bold text-gray-900">
                 {{ formatPrice(grandTotal) }}
               </td>
               <td></td>

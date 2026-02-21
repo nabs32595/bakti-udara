@@ -20,7 +20,7 @@
           <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          <p class="text-sm text-gray-600 mb-2">Drop files here or click to upload</p>
+          <p class="text-xs text-gray-600 mb-2">Drop files here or click to upload</p>
           <input
             ref="fileInput"
             type="file"
@@ -42,17 +42,17 @@
 
         <!-- Existing Documents with Remove Option -->
         <div v-if="documents.length > 0" class="space-y-2">
-          <h4 class="text-sm font-medium text-gray-700">Existing Documents:</h4>
+          <h4 class="text-xs font-medium text-gray-700">Existing Documents:</h4>
           <div v-for="(doc, index) in documents" :key="doc.id" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
             <div class="flex items-center space-x-3">
               <div class="flex-shrink-0">
-                <div :class="getFileIconClass(doc.type)" class="w-8 h-8 rounded flex items-center justify-center text-white text-sm font-medium">
+                <div :class="getFileIconClass(doc.type)" class="w-7 h-7 rounded flex items-center justify-center text-white text-xs font-medium">
                   {{ getFileIcon(doc.type) }}
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ doc.name }}</p>
-                <p class="text-xs text-gray-500">{{ doc.type }} • {{ doc.size }} • {{ doc.uploadDate }}</p>
+                <p class="text-xs font-medium text-gray-900 truncate">{{ doc.name }}</p>
+                <p class="text-[11px] text-gray-500">{{ doc.type }} • {{ doc.size }} • {{ doc.uploadDate }}</p>
               </div>
             </div>
             <Button
@@ -69,17 +69,17 @@
 
         <!-- Newly Added Documents -->
         <div v-if="editedDocuments.length > 0" class="space-y-2">
-          <h4 class="text-sm font-medium text-gray-700">New Documents:</h4>
+          <h4 class="text-xs font-medium text-gray-700">New Documents:</h4>
           <div v-for="(file, index) in editedDocuments" :key="index" class="flex items-center justify-between p-3 bg-gray-100 border border-gray-300 rounded-lg">
             <div class="flex items-center space-x-3">
               <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-gray-600 rounded flex items-center justify-center text-white text-sm font-medium">
+                <div class="w-7 h-7 bg-gray-600 rounded flex items-center justify-center text-white text-xs font-medium">
                   {{ getFileIcon(getFileTypeFromMime(file.type)) }}
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ file.name }}</p>
-                <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                <p class="text-xs font-medium text-gray-900 truncate">{{ file.name }}</p>
+                <p class="text-[11px] text-gray-500">{{ formatFileSize(file.size) }}</p>
               </div>
             </div>
             <Button
@@ -100,13 +100,13 @@
         <div v-for="doc in documents" :key="doc.id" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
           <div class="flex items-center space-x-3">
             <div class="flex-shrink-0">
-              <div :class="getFileIconClass(doc.type)" class="w-8 h-8 rounded flex items-center justify-center text-white text-sm font-medium">
+              <div :class="getFileIconClass(doc.type)" class="w-7 h-7 rounded flex items-center justify-center text-white text-xs font-medium">
                 {{ getFileIcon(doc.type) }}
               </div>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">{{ doc.name }}</p>
-              <p class="text-xs text-gray-500">{{ doc.type }} • {{ doc.size }} • {{ doc.uploadDate }}</p>
+              <p class="text-xs font-medium text-gray-900 truncate">{{ doc.name }}</p>
+              <p class="text-[11px] text-gray-500">{{ doc.type }} • {{ doc.size }} • {{ doc.uploadDate }}</p>
             </div>
           </div>
           <div class="flex items-center space-x-2">

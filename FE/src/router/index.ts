@@ -28,7 +28,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/QuotationsPage.vue')
   },
   {
-    path: '/rfq/:rfqNo',
+    // Catch full rfqNo including slashes (e.g. PA/RO1/M50/260123/EMAIL)
+    path: '/rfq/:rfqNo(.*)',
     name: 'RFQ Details',
     component: () => import('@/pages/DetailsPage.vue')
   },

@@ -174,6 +174,29 @@ export const INITIAL_RFQ_LIST = [
   },
   {
     no: 4,
+    desc: 'KCM 200 CONFIG MODULE FRONT',
+    referenceNo: '04',
+    rfqNo: 'PA/AOG/M50/040123/EMAIL',
+    pno: '534.56.09.053',
+    aes: 'E',
+    quantity: 2,
+    status: 'Quoted',
+    date: '10/01/2023 2:00PM',
+    timestamp: new Date('2023-01-10T14:00:00').getTime(),
+    lastEditedBy: {
+      name: 'John Smith',
+      initials: 'JS',
+      timestamp: '10/01/2023 2:00PM'
+    },
+    statusTimeline: [
+      { status: 'Created', timestamp: '10/01/2023 1:30PM' },
+      { status: 'Quoted', timestamp: '10/01/2023 2:00PM' }
+    ],
+    collaborators: [],
+    documents: []
+  },
+  {
+    no: 16,
     desc: 'MUDGUARD ASSY',
     referenceNo: '04',
     rfqNo: 'PA/AOG/M50/040123/EMAIL',
@@ -189,20 +212,60 @@ export const INITIAL_RFQ_LIST = [
       timestamp: '06/01/2025 11:20AM'
     },
     statusTimeline: [
-      {
-        status: 'Created',
-        timestamp: '06/01/2025 11:20AM'
-      },
-      {
-        status: 'Quoted',
-        timestamp: '06/01/2025 11:35AM'
-      }
+      { status: 'Created', timestamp: '06/01/2025 11:20AM' },
+      { status: 'Quoted', timestamp: '06/01/2025 11:35AM' }
     ],
     collaborators: [],
     documents: []
   },
   {
     no: 5,
+    desc: 'CONTACT SOCKET',
+    referenceNo: '04',
+    rfqNo: 'PA/RO1/M50/260123/EMAIL',
+    pno: '9717516927',
+    aes: 'E',
+    quantity: 100,
+    status: 'Quoted',
+    date: '03/02/2023 11:00AM',
+    timestamp: new Date('2023-02-03T11:00:00').getTime(),
+    lastEditedBy: {
+      name: 'Sarah Wilson',
+      initials: 'SW',
+      timestamp: '03/02/2023 11:00AM'
+    },
+    statusTimeline: [
+      { status: 'Created', timestamp: '03/02/2023 10:30AM' },
+      { status: 'Quoted', timestamp: '03/02/2023 11:00AM' }
+    ],
+    collaborators: [],
+    documents: []
+  },
+  {
+    no: 6,
+    desc: 'BLOWER',
+    referenceNo: '04',
+    rfqNo: 'PA/RO1/M50/260123/EMAIL',
+    pno: '5391109436',
+    aes: 'E',
+    quantity: 10,
+    status: 'Quoted',
+    date: '03/02/2023 11:00AM',
+    timestamp: new Date('2023-02-03T11:00:00').getTime(),
+    lastEditedBy: {
+      name: 'Sarah Wilson',
+      initials: 'SW',
+      timestamp: '03/02/2023 11:00AM'
+    },
+    statusTimeline: [
+      { status: 'Created', timestamp: '03/02/2023 10:30AM' },
+      { status: 'Quoted', timestamp: '03/02/2023 11:00AM' }
+    ],
+    collaborators: [],
+    documents: []
+  },
+  {
+    no: 7,
     desc: 'NUT',
     referenceNo: '04',
     rfqNo: 'PA/RO1/M50/260123/EMAIL',
@@ -235,44 +298,30 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 6,
-    desc: 'HOSE ASSY',
+    no: 8,
+    desc: 'KIT FILTER OBOGS',
     referenceNo: '04',
     rfqNo: 'PA/NOR/M50/110123/EMAIL',
-    pno: '959.90.01.255',
+    pno: '9571210607',
     aes: 'E',
-    quantity: 1,
+    quantity: 76,
     status: 'Quoted',
-    date: '04/01/2025 9:30AM',
-    timestamp: new Date('2025-01-04T09:30:00').getTime(),
+    date: '13/01/2023 3:00PM',
+    timestamp: new Date('2023-01-13T15:00:00').getTime(),
     lastEditedBy: {
       name: 'David Lee',
       initials: 'DL',
-      timestamp: '04/01/2025 9:30AM'
+      timestamp: '13/01/2023 3:00PM'
     },
     statusTimeline: [
-      {
-        status: 'Created',
-        timestamp: '04/01/2025 9:30AM'
-      },
-      {
-        status: 'Quoted',
-        timestamp: '04/01/2025 10:00AM'
-      },
-      {
-        status: 'Quoted',
-        timestamp: '05/01/2025 2:00PM'
-      },
-      {
-        status: 'Quoted',
-        timestamp: '06/01/2025 3:30PM'
-      }
+      { status: 'Created', timestamp: '13/01/2023 2:30PM' },
+      { status: 'Quoted', timestamp: '13/01/2023 3:00PM' }
     ],
     collaborators: [],
     documents: []
   },
   {
-    no: 7,
+    no: 9,
     desc: 'ROD OPERATING RH',
     referenceNo: '04',
     rfqNo: 'PA/RO1/M50/260123/EMAIL',
@@ -301,7 +350,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 8,
+    no: 10,
     desc: 'HOSE ASSY',
     referenceNo: '04',
     rfqNo: 'SPQM50-15012025-0001-RO1',
@@ -338,7 +387,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 9,
+    no: 11,
     desc: 'ROD OPERATING LH',
     referenceNo: '04',
     rfqNo: 'SPQM50-15012025-0002-RO1',
@@ -371,7 +420,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 10,
+    no: 12,
     desc: 'PLACARD, TYRE PRESSURE',
     referenceNo: '04',
     rfqNo: 'SPQM50-15012025-0003-RO1',
@@ -400,7 +449,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 11,
+    no: 13,
     desc: 'PLACARD, TYRE PRESSURE',
     referenceNo: '04',
     rfqNo: 'PA/RO2/M50/200125/EMAIL',
@@ -437,7 +486,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 13,
+    no: 14,
     desc: 'CIRCLIP, WAVE, ST, 29.1*2.5',
     referenceNo: '04',
     rfqNo: 'PA/RO2/M50/200125/EMAIL',
@@ -470,7 +519,7 @@ export const INITIAL_RFQ_LIST = [
     documents: []
   },
   {
-    no: 14,
+    no: 15,
     desc: 'INDICATOR, CAUTION',
     referenceNo: '04',
     rfqNo: 'RFQM50-08012025-0013-RO1',
@@ -494,6 +543,31 @@ export const INITIAL_RFQ_LIST = [
         status: 'Quoted',
         timestamp: '18/12/2024 4:30PM'
       }
+    ],
+    collaborators: [],
+    documents: []
+  },
+  {
+    no: 17,
+    desc: 'HOSE ASSY',
+    referenceNo: '04',
+    rfqNo: 'PA/NOR/M50/110123/EMAIL',
+    pno: '959.90.01.255',
+    aes: 'E',
+    quantity: 1,
+    status: 'Quoted',
+    date: '04/01/2025 9:30AM',
+    timestamp: new Date('2025-01-04T09:30:00').getTime(),
+    lastEditedBy: {
+      name: 'David Lee',
+      initials: 'DL',
+      timestamp: '04/01/2025 9:30AM'
+    },
+    statusTimeline: [
+      { status: 'Created', timestamp: '04/01/2025 9:30AM' },
+      { status: 'Quoted', timestamp: '04/01/2025 10:00AM' },
+      { status: 'Quoted', timestamp: '05/01/2025 2:00PM' },
+      { status: 'Quoted', timestamp: '06/01/2025 3:30PM' }
     ],
     collaborators: [],
     documents: []

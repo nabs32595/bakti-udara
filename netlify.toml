@@ -1,7 +1,7 @@
 [build]
   base = "FE"
   command = "npm run build"
-  publish = "FE/dist"
+  publish = "dist"
 
 # SPA fallback: all routes serve index.html for Vue Router
 [[redirects]]

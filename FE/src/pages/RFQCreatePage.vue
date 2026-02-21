@@ -36,24 +36,19 @@
             <div class="space-y-4">
               <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">Basic Information</h3>
               
-              <!-- RFQ Number (Auto-generated with partial manual input) -->
+              <!-- RFQ Number (free text) and Reference No -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label for="rfqNumber" class="text-sm font-medium text-gray-700">RFQ Number</Label>
-                  <div class="flex items-center space-x-2 mt-1">
-                    <span class="text-sm text-gray-500 font-mono">{{ rfqPrefix }}</span>
-                    <Input
-                      id="rfqNumber"
-                      v-model="formData.referenceNo"
-                      type="text"
-                      placeholder="RO1"
-                      class="flex-1"
-                      :class="{ 'border-red-500': errors.referenceNo }"
-                      @input="clearError('referenceNo')"
-                    />
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Format: RFQM50-DDMMYYYY-####-RO#</p>
-                  <p v-if="errors.referenceNo" class="text-xs text-red-500 mt-1">{{ errors.referenceNo }}</p>
+                  <Label for="rfqNumber" class="text-sm font-medium text-gray-700">RFQ Number *</Label>
+                  <Input
+                    id="rfqNumber"
+                    v-model="formData.rfqNo"
+                    type="text"
+                    placeholder="e.g. RFQM50-08012025-0013-RO1 or PA/RO1/M50/260123/EMAIL"
+                    :class="{ 'border-red-500': errors.rfqNo }"
+                    @input="clearError('rfqNo')"
+                  />
+                  <p v-if="errors.rfqNo" class="text-xs text-red-500 mt-1">{{ errors.rfqNo }}</p>
                 </div>
                 
                 <div>
@@ -244,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -260,6 +255,7 @@ const { toast } = useToast()
 
 // Form data
 const formData = ref({
+  rfqNo: '',
   referenceNo: '',
   pno: '',
   desc: '',
@@ -274,16 +270,6 @@ const isDragOver = ref(false)
 const uploadedFiles = ref<File[]>([])
 const errors = ref<Record<string, string>>({})
 const fileInput = ref<HTMLInputElement | null>(null)
-
-// Computed properties
-const rfqPrefix = computed(() => {
-  const now = new Date()
-  const day = String(now.getDate()).padStart(2, '0')
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const year = now.getFullYear()
-  const sequence = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')
-  return `RFQM50-${day}${month}${year}-${sequence}-`
-})
 
 // Methods
 const validateForm = () => {
@@ -305,8 +291,8 @@ const validateForm = () => {
     errors.value.aes = 'AES classification is required'
   }
   
-  if (!formData.value.referenceNo.trim()) {
-    errors.value.referenceNo = 'Reference number is required'
+  if (!formData.value.rfqNo.trim()) {
+    errors.value.rfqNo = 'RFQ number is required'
   }
   
   return Object.keys(errors.value).length === 0
@@ -329,13 +315,10 @@ const handleSubmit = async () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // Generate final RFQ number
-    const rfqNumber = `${rfqPrefix.value}${formData.value.referenceNo}`
-    
     // Show success message
     toast({
       title: 'Success',
-      description: `RFQ ${rfqNumber} created successfully!`
+      description: `RFQ ${formData.value.rfqNo} created successfully!`
     })
     
     // Navigate to RFQ details or list
@@ -364,7 +347,9 @@ const handleCancel = () => {
 }
 
 const hasFormChanges = () => {
-  return formData.value.pno || 
+  return formData.value.rfqNo ||
+         formData.value.referenceNo ||
+         formData.value.pno || 
          formData.value.desc || 
          formData.value.quantity !== 1 || 
          formData.value.aes || 
@@ -424,11 +409,4 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-// Initialize form
-onMounted(() => {
-  // Set default reference number if needed
-  if (!formData.value.referenceNo) {
-    formData.value.referenceNo = 'RO1'
-  }
-})
 </script>

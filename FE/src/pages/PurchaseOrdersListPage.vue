@@ -13,6 +13,12 @@
             <CardTitle class="text-gray-700 text-base">Purchase Order List</CardTitle>
             <CardDescription class="text-gray-500 text-sm">All PO line items with delivery status</CardDescription>
           </div>
+          <Button
+            class="bg-gray-900 hover:bg-gray-800 text-white"
+            @click="router.push('/purchase-orders/create')"
+          >
+            Create PO
+          </Button>
         </div>
 
         <!-- Search and Filters -->

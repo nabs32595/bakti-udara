@@ -15,38 +15,48 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/request-for-quotation',
     name: 'Request For Quotation',
-    component: () => import('@/pages/RequestForQuotation.vue')
+    component: () => import('@/pages/RFQListPage.vue')
   },
   {
     path: '/request-for-quotation/create',
     name: 'Create RFQ',
-    component: () => import('@/pages/CreateRFQPage.vue')
+    component: () => import('@/pages/RFQCreatePage.vue')
   },
   {
     path: '/quotations',
     name: 'Quotations',
-    component: () => import('@/pages/QuotationsPage.vue')
+    component: () => import('@/pages/QuotationsListPage.vue')
+  },
+  {
+    path: '/quotations/create',
+    name: 'Create Quotation',
+    component: () => import('@/pages/QuotationCreatePage.vue')
   },
   {
     // Catch full rfqNo including slashes (e.g. PA/RO1/M50/260123/EMAIL)
     path: '/rfq/:rfqNo(.*)',
     name: 'RFQ Details',
-    component: () => import('@/pages/DetailsPage.vue')
+    component: () => import('@/pages/EntityDetailsPage.vue')
   },
   {
     path: '/quotations/:quotationNo',
     name: 'Quotation Details',
-    component: () => import('@/pages/DetailsPage.vue')
+    component: () => import('@/pages/EntityDetailsPage.vue')
   },
   {
     path: '/purchase-orders',
     name: 'Purchase Orders',
-    component: () => import('@/pages/PurchaseOrdersPage.vue')
+    component: () => import('@/pages/PurchaseOrdersListPage.vue')
+  },
+  {
+    path: '/purchase-orders/create',
+    name: 'Create Purchase Order',
+    component: () => import('@/pages/PurchaseOrderCreatePage.vue')
   },
   {
     path: '/purchase-orders/:poReference',
     name: 'Purchase Order Details',
-    component: () => import('@/pages/DetailsPage.vue')
+    component: () => import('@/pages/EntityDetailsPage.vue')
   },
   {
     path: '/deliveries',

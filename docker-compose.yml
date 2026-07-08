@@ -1,0 +1,58 @@
+# docker-compose.yml
+# Local development for MyBakti:
+#   - fe   : Vue 3 + Vite app  (http://localhost:5173)
+#   - docs : VitePress site    (http://localhost:5174)
+# Both share the `bakti-net` network and support hot reload via bind mounts + polling.
+
+services:
+  fe:
+    build:
+      context: ./FE
+      dockerfile: Dockerfile
+    container_name: bakti-fe
+    ports:
+      - "5173:5173"
+    volumes:
+      # Bind-mount source for live edits...
+      - ./FE:/app
+      # ...but keep the container's installed node_modules (anonymous volume shadows host copy)
+      - /app/node_modules
+    environment:
+      # Force file-poll based watching so HMR works through Docker bind mounts
+      # (host inotify events don't always reach the container, especially on macOS/Windows).
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    networks:
+      - bakti-net
+    restart: unless-stopped
+
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bakti-docs
+    ports:
+      - "5174:5174"
+    volumes:
+      # Bind-mount only the docs/ folder so HMR fires on every .md/.vue/.ts change
+      # without traversing unrelated (FE/, node_modules, etc.) paths.
+      - ./docs:/app/docs
+      # Use anonymous volumes for cached build artefacts so host edits don't
+      # shadow the container's own cache/dist.
+      - /app/docs/.vitepress/cache
+      - /app/docs/.vitepress/dist
+      - /app/node_modules
+    environment:
+      # Belt-and-suspenders polling for file watchers (works through Docker
+      # bind mounts on macOS/Windows where inotify events don't propagate).
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - WATCHPACK_POLLING=true
+      - WATCHPACK_POLL_INTERVAL=1000
+    networks:
+      - bakti-net
+    restart: unless-stopped
+
+networks:
+  bakti-net:
+    driver: bridge

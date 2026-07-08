@@ -9,7 +9,7 @@
     <!-- Footer -->
     <footer class="absolute bottom-0 w-full py-4">
       <div class="text-center text-sm text-gray-500">
-        <p>&copy; 2025 Bakti Udara. All rights reserved.</p>
+        <p>&copy; 2025 MyBakti. All rights reserved.</p>
       </div>
     </footer>
   </div>

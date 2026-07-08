@@ -1,0 +1,10 @@
+# .dockerignore (repo root) — for the VitePress docs build context
+node_modules
+dist
+.git
+.idea
+.vscode
+FE
+*.log
+docs/.vitepress/cache
+docs/.vitepress/dist

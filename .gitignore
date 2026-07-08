@@ -1,0 +1,18 @@
+# VitePress build output & cache
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Dependencies
+node_modules
+
+# Firebase
+.firebase/
+.firebasehosting.cache
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Env
+.env
+.env.local
+.env.*.local

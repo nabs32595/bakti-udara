@@ -6,9 +6,9 @@
         <SidebarHeader>
           <div class="flex items-center gap-3 px-4 py-3 border-b">
             <div class="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <span class="text-xs font-bold">BU</span>
+              <span class="text-xs font-bold">MB</span>
             </div>
-            <span class="text-sm font-medium">Bakti Udara</span>
+            <span class="text-sm font-medium">MyBakti</span>
           </div>
         </SidebarHeader>
 

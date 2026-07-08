@@ -6,7 +6,7 @@
         <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-800 mb-6">
           <span class="text-2xl font-bold text-white">BU</span>
         </div>
-        <h1 class="text-3xl font-bold text-gray-900">Bakti Udara</h1>
+        <h1 class="text-3xl font-bold text-gray-900">MyBakti</h1>
         <p class="text-gray-600 mt-2">Sign in to your account</p>
       </div>
 

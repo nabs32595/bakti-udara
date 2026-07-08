@@ -4,8 +4,8 @@ export const INITIAL_EMAIL_TEMPLATES = [
     name: 'Quotation About To Expire',
     description: 'Notify customers about expiring quotations',
     category: 'Welcome',
-    subject: 'Welcome to Bakti Udara!',
-    content: '<h2>Welcome to Bakti Udara!</h2><p>Thank you for choosing us for your aviation needs...</p>',
+    subject: 'Welcome to MyBakti!',
+    content: '<h2>Welcome to MyBakti!</h2><p>Thank you for choosing us for your aviation needs...</p>',
     status: 'Active',
     lastModified: '2 days ago'
   },
